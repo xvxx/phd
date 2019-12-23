@@ -3,6 +3,7 @@
 extern crate async_std;
 
 use async_std::{
+    fs,
     io::BufReader,
     net::{TcpListener, TcpStream, ToSocketAddrs},
     prelude::*,
@@ -42,7 +43,18 @@ async fn client_loop(mut stream: TcpStream) -> Result<()> {
 }
 
 async fn respond(stream: &mut TcpStream, selector: &str) -> Result<()> {
-    let response = format!("3You sent: {}", selector);
+    let mut response = format!("iYou sent: {}\r\n", selector);
+
+    let mut dir = fs::read_dir(".").await?;
+
+    while let Some(Ok(entry)) = dir.next().await {
+        response.push_str(&format!(
+            "1{}\t/{}\tlocalhost\t7070\r\n",
+            entry.file_name().into_string().unwrap(),
+            entry.file_name().into_string().unwrap(),
+        ));
+    }
+
     stream.write_all(response.as_bytes()).await?;
     Ok(())
 }
