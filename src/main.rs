@@ -30,13 +30,19 @@ async fn listen(addr: impl ToSocketAddrs) -> Result<()> {
     Ok(())
 }
 
-async fn client_loop(stream: TcpStream) -> Result<()> {
+async fn client_loop(mut stream: TcpStream) -> Result<()> {
     let reader = BufReader::new(&stream);
     let mut lines = reader.lines();
 
-    while let Some(line) = lines.next().await {
-        let line = line?;
+    if let Some(Ok(line)) = lines.next().await {
         println!("-> client sent: {:?}", line);
+        respond(&mut stream, &line).await?;
     }
+    Ok(())
+}
+
+async fn respond(stream: &mut TcpStream, selector: &str) -> Result<()> {
+    let response = format!("3You sent: {}", selector);
+    stream.write_all(response.as_bytes()).await?;
     Ok(())
 }
