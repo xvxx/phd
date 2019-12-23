@@ -2,8 +2,8 @@
       /       |
  ___ (___  ___|
 |   )|   )|   )
-|__/ |  / |__/ 
-|   
+|__/ |  / |__/
+|
 ```
 
 dirt simple gopher server.
@@ -19,7 +19,11 @@ dirt simple gopher server.
 
 ## usage
 
+    phd [options] <directory>
+
     phd ./path/to/gopher/root    # Serve directory over port 70.
+    phd -p 7070 docs             # Serve 'docs' directory on port 7070
+    phd -h localhost             # Serve cwd using hostname "localhost".
 
 ## development
 

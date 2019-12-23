@@ -1,0 +1,8 @@
+[package]
+name = "phd"
+version = "0.1.0"
+authors = ["dvkt <c@dvkt.io>"]
+edition = "2018"
+
+[dependencies]
+async-std = "1.4.0"
