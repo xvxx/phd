@@ -5,24 +5,22 @@ use async_std::{
     prelude::*,
     task,
 };
+use std::path::PathBuf;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
 pub fn start(addr: &str, root: &str) -> Result<()> {
-    let fut = listen(addr, root);
-    task::block_on(fut)
-}
-
-async fn listen(addr: &str, root: &str) -> Result<()> {
-    let listener = TcpListener::bind(addr).await?;
-    let mut incoming = listener.incoming();
-    while let Some(stream) = incoming.next().await {
-        let stream = stream?;
-        println!("-> Connection from: {}", stream.peer_addr()?);
-        let root = root.to_string();
-        task::spawn(client_loop(stream, root));
-    }
-    Ok(())
+    task::block_on(async {
+        let listener = TcpListener::bind(addr).await?;
+        let mut incoming = listener.incoming();
+        while let Some(stream) = incoming.next().await {
+            let stream = stream?;
+            println!("-> Connection from: {}", stream.peer_addr()?);
+            let root = root.to_string();
+            task::spawn(client_loop(stream, root));
+        }
+        Ok(())
+    })
 }
 
 async fn client_loop(mut stream: TcpStream, root: String) -> Result<()> {
@@ -37,14 +35,21 @@ async fn client_loop(mut stream: TcpStream, root: String) -> Result<()> {
 }
 
 async fn respond(stream: &mut TcpStream, selector: &str, root: &str) -> Result<()> {
-    let mut response = format!("iYou sent: {}\r\n", selector);
+    let mut path = PathBuf::from(root);
+    path.push(selector.replace("..", "."));
+    let mut response = format!("iPath: {}\r\n", path.to_string_lossy());
+    let mut dir = fs::read_dir(path.clone()).await?;
 
-    let mut dir = fs::read_dir(root).await?;
+    let mut path = path.to_string_lossy().to_string();
+    if !path.ends_with('/') {
+        path.push('/');
+    }
 
     while let Some(Ok(entry)) = dir.next().await {
         response.push_str(&format!(
-            "1{}\t/{}\tlocalhost\t7070\r\n",
+            "1{}\t{}{}\tlocalhost\t7070\r\n",
             entry.file_name().into_string().unwrap(),
+            path,
             entry.file_name().into_string().unwrap(),
         ));
     }
