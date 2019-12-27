@@ -7,3 +7,4 @@ edition = "2018"
 [dependencies]
 content_inspector = "0.2.4"
 threadpool = "1.7.1"
+gophermap = "0.1.2"

@@ -8,22 +8,22 @@ fn main() {
         return;
     }
 
-    let mut root = ".".to_string();
+    let mut root = ".";
     let mut iter = args.iter();
-    let mut host = "localhost".to_string();
-    let mut port = "70".to_string();
+    let mut host = "localhost";
+    let mut port = "70";
     while let Some(arg) = iter.next() {
         match arg.as_ref() {
             "--version" | "-v" | "-version" => return print_version(),
             "--help" | "-h" | "-help" => return print_help(),
             "--port" | "-p" | "-port" => {
                 if let Some(p) = iter.next() {
-                    port = p.into();
+                    port = p;
                 }
             }
             "--host" | "-H" | "-host" => {
                 if let Some(h) = iter.next() {
-                    host = h.into();
+                    host = h;
                 }
             }
             _ => {
@@ -31,15 +31,13 @@ fn main() {
                     eprintln!("unknown flag: {}", arg);
                     process::exit(1);
                 } else {
-                    root = arg.clone();
+                    root = arg;
                 }
             }
         }
     }
 
-    let addr = format!("{}:{}", host, port);
-    println!("-> Serving {} on {}", root, addr);
-    if let Err(e) = phd::server::start(&addr, &root) {
+    if let Err(e) = phd::server::start(host, port, root) {
         eprintln!("{}", e);
     }
 }
