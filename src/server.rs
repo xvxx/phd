@@ -5,7 +5,6 @@ use async_std::{
     prelude::*,
     task,
 };
-use content_inspector::{inspect, ContentType};
 use std::path::PathBuf;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
@@ -43,17 +42,15 @@ async fn respond(stream: &mut TcpStream, selector: &str, root: &str) -> Result<(
 
     let md = fs::metadata(path.clone()).await?;
     if md.is_file() {
-        let mut f = fs::File::open(path).await?;
-        let mut buf = [0; 1024];
-        let mut bytes = md.len();
-        while bytes > 0 {
-            let n = f.read(&mut buf[..]).await?;
-            bytes -= n as u64;
-            stream.write_all(&buf).await?;
-        }
-        return Ok(());
+        return send_text(stream, path).await;
+    } else if md.is_dir() {
+        return send_dir(stream, path).await;
+    } else {
+        Ok(())
     }
+}
 
+async fn send_dir(stream: &mut TcpStream, path: PathBuf) -> Result<()> {
     let mut response = String::new();
     let mut dir = fs::read_dir(path.clone()).await?;
 
@@ -67,6 +64,19 @@ async fn respond(stream: &mut TcpStream, selector: &str, root: &str) -> Result<(
         ));
     }
     stream.write_all(response.as_bytes()).await?;
+    Ok(())
+}
+
+async fn send_text(stream: &mut TcpStream, path: PathBuf) -> Result<()> {
+    let md = fs::metadata(path.clone()).await?;
+    let mut f = fs::File::open(path).await?;
+    let mut buf = [0; 1024];
+    let mut bytes = md.len();
+    while bytes > 0 {
+        let n = f.read(&mut buf[..]).await?;
+        bytes -= n as u64;
+        stream.write_all(&buf).await?;
+    }
     Ok(())
 }
 
