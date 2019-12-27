@@ -40,7 +40,21 @@ async fn client_loop(mut stream: TcpStream, root: String) -> Result<()> {
 async fn respond(stream: &mut TcpStream, selector: &str, root: &str) -> Result<()> {
     let mut path = PathBuf::from(root);
     path.push(selector.replace("..", "."));
-    let mut response = format!("iPath: {}\r\n", path.to_string_lossy());
+
+    let md = fs::metadata(path.clone()).await?;
+    if md.is_file() {
+        let mut f = fs::File::open(path).await?;
+        let mut buf = [0; 1024];
+        let mut bytes = md.len();
+        while bytes > 0 {
+            let n = f.read(&mut buf[..]).await?;
+            bytes -= n as u64;
+            stream.write_all(&buf).await?;
+        }
+        return Ok(());
+    }
+
+    let mut response = String::new();
     let mut dir = fs::read_dir(path.clone()).await?;
 
     while let Some(Ok(entry)) = dir.next().await {
