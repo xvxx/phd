@@ -5,9 +5,12 @@ use async_std::{
     prelude::*,
     task,
 };
+use content_inspector::{inspect, ContentType};
 use std::path::PathBuf;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+const MAX_PEEK_SIZE: usize = 1024;
 
 pub fn start(addr: &str, root: &str) -> Result<()> {
     task::block_on(async {
@@ -41,22 +44,41 @@ async fn respond(stream: &mut TcpStream, selector: &str, root: &str) -> Result<(
     let mut dir = fs::read_dir(path.clone()).await?;
 
     while let Some(Ok(entry)) = dir.next().await {
-        if let Ok(metadata) = entry.metadata().await {
-            let file_type = if metadata.is_file() {
-                '0'
-            } else if metadata.is_dir() {
-                '1'
-            } else {
-                '3'
-            };
-            response.push_str(&format!(
-                "{}{}\t{}\tlocalhost\t7070\r\n",
-                file_type,
-                entry.file_name().into_string().unwrap(),
-                entry.path().to_string_lossy(),
-            ));
-        }
+        let file_type = file_type(&entry).await;
+        response.push_str(&format!(
+            "{}{}\t{}\tlocalhost\t7070\r\n",
+            file_type,
+            entry.file_name().into_string().unwrap(),
+            entry.path().to_string_lossy(),
+        ));
     }
     stream.write_all(response.as_bytes()).await?;
     Ok(())
+}
+
+async fn file_type(dir: &fs::DirEntry) -> char {
+    if let Ok(metadata) = dir.metadata().await {
+        if metadata.is_file() {
+            if let Ok(file) = fs::File::open(&dir.path()).await {
+                let mut buffer: Vec<u8> = vec![];
+                let _ = file
+                    .take(MAX_PEEK_SIZE as u64)
+                    .read_to_end(&mut buffer)
+                    .await;
+                if content_inspector::inspect(&buffer).is_binary() {
+                    '9'
+                } else {
+                    '0'
+                }
+            } else {
+                '9'
+            }
+        } else if metadata.is_dir() {
+            '1'
+        } else {
+            '3'
+        }
+    } else {
+        '3'
+    }
 }

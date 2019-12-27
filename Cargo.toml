@@ -6,3 +6,4 @@ edition = "2018"
 
 [dependencies]
 async-std = "1.4.0"
+content_inspector = "0.2.4"
