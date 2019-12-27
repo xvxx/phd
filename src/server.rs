@@ -40,18 +40,22 @@ async fn respond(stream: &mut TcpStream, selector: &str, root: &str) -> Result<(
     let mut response = format!("iPath: {}\r\n", path.to_string_lossy());
     let mut dir = fs::read_dir(path.clone()).await?;
 
-    let mut path = path.to_string_lossy().to_string();
-    if !path.ends_with('/') {
-        path.push('/');
-    }
-
     while let Some(Ok(entry)) = dir.next().await {
-        response.push_str(&format!(
-            "1{}\t{}{}\tlocalhost\t7070\r\n",
-            entry.file_name().into_string().unwrap(),
-            path,
-            entry.file_name().into_string().unwrap(),
-        ));
+        if let Ok(metadata) = entry.metadata().await {
+            let file_type = if metadata.is_file() {
+                '0'
+            } else if metadata.is_dir() {
+                '1'
+            } else {
+                '3'
+            };
+            response.push_str(&format!(
+                "{}{}\t{}\tlocalhost\t7070\r\n",
+                file_type,
+                entry.file_name().into_string().unwrap(),
+                entry.path().to_string_lossy(),
+            ));
+        }
     }
     stream.write_all(response.as_bytes()).await?;
     Ok(())
