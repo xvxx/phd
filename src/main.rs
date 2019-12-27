@@ -39,7 +39,7 @@ fn main() {
 
     let addr = format!("{}:{}", host, port);
     println!("-> Serving {} on {}", root, addr);
-    if let Err(e) = phd::server::start(addr, &root) {
+    if let Err(e) = phd::server::start(&addr, &root) {
         eprintln!("{}", e);
     }
 }

@@ -1,11 +1,10 @@
 use async_std::{
     fs,
     io::BufReader,
-    net::{TcpListener, TcpStream, ToSocketAddrs},
+    net::{TcpListener, TcpStream},
     prelude::*,
     task,
 };
-use std::path;
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
@@ -20,18 +19,19 @@ async fn listen(addr: &str, root: &str) -> Result<()> {
     while let Some(stream) = incoming.next().await {
         let stream = stream?;
         println!("-> Connection from: {}", stream.peer_addr()?);
-        task::spawn(client_loop(stream, &root.to_string()));
+        let root = root.to_string();
+        task::spawn(client_loop(stream, root));
     }
     Ok(())
 }
 
-async fn client_loop(mut stream: TcpStream, root: &str) -> Result<()> {
+async fn client_loop(mut stream: TcpStream, root: String) -> Result<()> {
     let reader = BufReader::new(&stream);
     let mut lines = reader.lines();
 
     if let Some(Ok(line)) = lines.next().await {
         println!("-> client sent: {:?}", line);
-        respond(&mut stream, &line, root).await?;
+        respond(&mut stream, &line, &root).await?;
     }
     Ok(())
 }
