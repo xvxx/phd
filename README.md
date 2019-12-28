@@ -26,12 +26,12 @@ For example:
 
     $ cat echo.gph
     #!/bin/sh
-    echo "iHi, world!"
+    echo "Hi, world! You said:" $1
 
 Then:
 
-    $ gopher-client gopher://localhost/1/echo/
-    Hi, world!
+    $ gopher-client gopher://localhost/1/echo?something
+    Hi, world! You said: something
 
 ## usage
 
