@@ -44,3 +44,4 @@ Any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't start wit
 - [ ] script mode
 - [ ] run mode
 - [ ] log options
+- [ ] 404 message
