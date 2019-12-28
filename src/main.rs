@@ -15,13 +15,20 @@ fn main() {
     while let Some(arg) = iter.next() {
         match arg.as_ref() {
             "--version" | "-v" | "-version" => return print_version(),
-            "--help" | "-h" | "-help" => return print_help(),
+            "--help" | "-help" => return print_help(),
             "--port" | "-p" | "-port" => {
                 if let Some(p) = iter.next() {
                     port = p;
                 }
             }
-            "--host" | "-H" | "-host" => {
+            "-h" => {
+                if let Some(h) = iter.next() {
+                    host = h;
+                } else {
+                    return print_help();
+                }
+            }
+            "--host" | "-host" => {
                 if let Some(h) = iter.next() {
                     host = h;
                 }
@@ -46,12 +53,15 @@ fn print_help() {
     println!(
         "Usage:
 
-    phd [options] <root>
+    phd [options] <root directory>
 
 Options:
 
     -p, --port      Port to bind to.
-    -H, --host      Hostname to use when generating links.
+    -h, --host      Hostname to use when generating links.
+
+Other flags:
+
     -h, --help      Print this screen.
     -v, --version   Print phd version."
     );
