@@ -69,11 +69,9 @@ where
     } else {
         // check for index.gph if we're looking for dir
         let mut index = path.clone();
-        ensure_trailing_slash(&mut index);
-        index.push_str("index.gph");
+        index.push_str("/index.gph");
         if Path::new(&index).exists() {
-            ensure_trailing_slash(&mut req.selector);
-            req.selector.push_str("index.gph");
+            req.selector.push_str("/index.gph");
             return write_gophermap(w, req);
         }
     }
@@ -137,7 +135,7 @@ where
             continue;
         }
         let mut path = rel_path.clone();
-        ensure_trailing_slash(&mut path);
+        path.push('/');
         path.push_str(&file_name.to_string_lossy());
         menu.write_entry(
             file_type(&entry),
@@ -175,9 +173,7 @@ where
     &'a W: Write,
 {
     let path = req.file_path();
-    println!("write_gophermap: {:?}", path);
     let file = File::open(&path)?;
-    println!("write_gophermap: {:?}", path);
     let reader = BufReader::new(file);
     for line in reader.lines() {
         let mut line = line?.trim_end_matches("\r\n").to_string();
@@ -221,11 +217,5 @@ fn file_type(dir: &fs::DirEntry) -> ItemType {
         ItemType::Directory
     } else {
         ItemType::Error
-    }
-}
-
-fn ensure_trailing_slash(s: &mut String) {
-    if !s.ends_with('/') {
-        s.push('/');
     }
 }
