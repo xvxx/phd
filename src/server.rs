@@ -35,6 +35,9 @@ impl Request {
     /// Path to the target file on disk requested by this request.
     pub fn file_path(&self) -> String {
         let mut path = self.root.to_string();
+        if !path.ends_with('/') {
+            path.push('/');
+        }
         path.push_str(self.selector.replace("..", ".").trim_start_matches('/'));
         path
     }
