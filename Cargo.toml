@@ -2,7 +2,21 @@
 name = "phd"
 version = "0.1.0"
 authors = ["dvkt <c@dvkt.io>"]
+license = "MIT"
 edition = "2018"
+description = "an esoteric gopher server"
+readme = "README.md"
+repository = "https://github.com/dvkt/phd"
+keywords = ["gopher", "server", "daemon"]
+exclude = [
+    "img/*"
+]
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = 'abort'
+opt-level = 'z'  # Optimize for size.
 
 [dependencies]
 content_inspector = "0.2.4"
