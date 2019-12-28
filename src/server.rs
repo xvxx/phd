@@ -63,14 +63,10 @@ where
     } else {
         // check for index.gph if we're looking for dir
         let mut index = path.clone();
-        if !index.ends_with('/') {
-            index.push('/');
-        }
+        ensure_trailing_slash(&mut index);
         index.push_str("index.gph");
         if Path::new(&index).exists() {
-            if !req.selector.ends_with('/') {
-                req.selector.push('/');
-            }
+            ensure_trailing_slash(&mut req.selector);
             req.selector.push_str("index.gph");
             return write_gophermap(w, req);
         }
@@ -93,15 +89,49 @@ fn write_dir<'a, W>(w: &'a W, req: Request) -> Result<()>
 where
     &'a W: Write,
 {
-    let mut dir = fs::read_dir(&req.file_path())?;
+    let path = req.file_path();
+    let mut dir = fs::read_dir(&path)?;
     let mut menu = GopherMenu::with_write(w);
+
+    let mut header = path.clone();
+    ensure_trailing_slash(&mut header);
+    header.push_str("header.gph");
+    if Path::new(&header).exists() {
+        let mut sel = req.selector.clone();
+        ensure_trailing_slash(&mut sel);
+        sel.push_str("header.gph");
+        write_gophermap(
+            w,
+            Request {
+                selector: sel,
+                ..req.clone()
+            },
+        )?;
+    }
+    let mut footer = path.clone();
+    ensure_trailing_slash(&mut footer);
+    footer.push_str("footer.gph");
+    if Path::new(&footer).exists() {
+        let mut sel = req.selector.clone();
+        ensure_trailing_slash(&mut sel);
+        sel.push_str("footer.gph");
+        write_gophermap(
+            w,
+            Request {
+                selector: sel,
+                ..req.clone()
+            },
+        )?;
+    }
+
     let rel_path = req.relative_file_path();
     while let Some(Ok(entry)) = dir.next() {
-        let mut path = rel_path.clone();
-        if !path.ends_with('/') {
-            path.push('/');
-        }
         let file_name = entry.file_name();
+        if file_name == "header.gph" || file_name == "footer.gph" {
+            continue;
+        }
+        let mut path = rel_path.clone();
+        ensure_trailing_slash(&mut path);
         path.push_str(&file_name.to_string_lossy());
         menu.write_entry(
             file_type(&entry),
@@ -139,7 +169,9 @@ where
     &'a W: Write,
 {
     let path = req.file_path();
+    println!("write_gophermap: {:?}", path);
     let file = File::open(&path)?;
+    println!("write_gophermap: {:?}", path);
     let reader = BufReader::new(file);
     for line in reader.lines() {
         let mut line = line?.trim_end_matches("\r\n").to_string();
@@ -178,5 +210,11 @@ fn file_type(dir: &fs::DirEntry) -> ItemType {
         ItemType::Directory
     } else {
         ItemType::Error
+    }
+}
+
+fn ensure_trailing_slash(s: &mut String) {
+    if !s.ends_with('/') {
+        s.push('/');
     }
 }

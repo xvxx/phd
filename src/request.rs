@@ -1,7 +1,7 @@
 use crate::Result;
 use std::fs;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Request {
     pub selector: String,
     pub root: String,
