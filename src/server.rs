@@ -144,6 +144,7 @@ where
     for line in reader.lines() {
         let mut line = line?.trim_end_matches("\r\n").to_string();
         match line.chars().filter(|&c| c == '\t').count() {
+            0 => line.push_str(&format!("\t(null)\t{}\t{}", req.host, req.port)),
             1 => line.push_str(&format!("\t{}\t{}", req.host, req.port)),
             2 => line.push_str(&format!("\t{}", req.port)),
             _ => {}
