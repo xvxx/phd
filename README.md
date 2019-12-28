@@ -6,7 +6,7 @@
 |
 ```
 
-an esoteric gopher server. 
+🐀 lil gopher daemon
 
 point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher.
 
