@@ -8,7 +8,7 @@
 
 `phd` is an esoteric gopher server for small gopherholes.
 
-point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher. `any .gph` files will be served up as [gopermaps](https://en.wikipedia.org/wiki/Gopher_(protocol)#Source_code_of_a_menu), and executable `.gph` files will be run with their output served to the client, like cgi! 
+point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher. `any .gph` files will be served up as [gopermaps](https://en.wikipedia.org/wiki/Gopher_(protocol)#Source_code_of_a_menu), and executable `.gph` files will be run as a script with their output served to the client, like cgi! 
 
 special files:
 
@@ -60,6 +60,16 @@ then:
     phd ./path/to/gopher/root    # Serve directory over port 70.
     phd -p 7070 docs             # Serve 'docs' directory on port 7070
     phd -h localhost             # Serve cwd using hostname "localhost".
+
+## installation
+
+binaries for linux, mac, and raspberry pi are available at https://github.com/dvkt/phd/releases:
+
+- [phetch-v0.1.0-linux-x86_64.tar.gz](https://github.com/dvkt/phd/releases/download/v0.1.0/phetch-v0.1.0-linux-x86_64.tar.gz)
+- [phetch-v0.1.0-linux-armv7.tar.gz (RPi)](https://github.com/dvkt/phd/releases/download/v0.1.0/phetch-v0.1.0-linux-armv7.tar.gz)
+- [phetch-v0.1.0-macos.zip](https://github.com/dvkt/phetch/phd/download/v0.1.0/phetch-v0.1.0-macos.zip)
+
+just unzip/untar the `phd` program into your $PATH and get going!
 
 ## development
 
