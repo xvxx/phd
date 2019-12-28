@@ -38,7 +38,7 @@ fn accept(stream: TcpStream, mut req: Request) -> Result<()> {
     let reader = BufReader::new(&stream);
     let mut lines = reader.lines();
     if let Some(Ok(line)) = lines.next() {
-        println!("-> Received: {:?}", line);
+        println!("-> Client sent: {:?}", line);
         req.selector = line;
         write_response(&stream, req)?;
     }
