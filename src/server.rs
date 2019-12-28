@@ -5,7 +5,9 @@ use std::{
     io::prelude::*,
     io::{BufReader, Read, Write},
     net::{TcpListener, TcpStream},
+    os::unix::fs::PermissionsExt,
     path::Path,
+    process::Command,
 };
 use threadpool::ThreadPool;
 
@@ -183,10 +185,15 @@ where
     &'a W: Write,
 {
     let path = req.file_path();
-    let file = File::open(&path)?;
-    let reader = BufReader::new(file);
+
+    let reader = if is_executable(&path) {
+        sh(&path, &[&req.selector, &req.host, &req.port.to_string()])?
+    } else {
+        fs::read_to_string(path)?
+    };
+
     for line in reader.lines() {
-        let mut line = line?.trim_end_matches("\r\n").to_string();
+        let mut line = line.trim_end_matches("\r").to_string();
         match line.chars().filter(|&c| c == '\t').count() {
             0 => {
                 if line.chars().nth(0) != Some('i') {
@@ -227,5 +234,24 @@ fn file_type(dir: &fs::DirEntry) -> ItemType {
         ItemType::Directory
     } else {
         ItemType::Error
+    }
+}
+
+/// Is the file at the given path executable?
+fn is_executable(path: &str) -> bool {
+    if let Ok(meta) = fs::metadata(path) {
+        meta.permissions().mode() & 0o111 != 0
+    } else {
+        false
+    }
+}
+
+/// Run a script and return its output.
+fn sh(path: &str, args: &[&str]) -> Result<String> {
+    let output = Command::new(path).args(args).output()?;
+    if output.status.success() {
+        Ok(std::str::from_utf8(&output.stdout)?.to_string())
+    } else {
+        Ok(std::str::from_utf8(&output.stderr)?.to_string())
     }
 }
