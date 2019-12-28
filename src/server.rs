@@ -1,10 +1,11 @@
 use crate::{Request, Result};
 use gophermap::{GopherMenu, ItemType};
 use std::{
-    fs,
+    fs::{self, File},
     io::prelude::*,
     io::{BufReader, Read, Write},
     net::{TcpListener, TcpStream},
+    path::Path,
 };
 use threadpool::ThreadPool;
 
@@ -46,12 +47,39 @@ fn accept(stream: TcpStream, mut req: Request) -> Result<()> {
 }
 
 /// Writes a response to a client based on a Request.
-fn write_response<'a, W>(w: &'a W, req: Request) -> Result<()>
+fn write_response<'a, W>(w: &'a W, mut req: Request) -> Result<()>
 where
     &'a W: Write,
 {
-    let md = fs::metadata(&req.file_path())?;
-    if md.is_file() {
+    let path = req.file_path();
+
+    // check for dir.gph if we're looking for dir
+    let mut gph_file = path.clone();
+    gph_file.push_str(".gph");
+    if Path::new(&gph_file).exists() {
+        req.selector = req.selector.trim_end_matches('/').into();
+        req.selector.push_str(".gph");
+        return write_gophermap(w, req);
+    } else {
+        // check for index.gph if we're looking for dir
+        let mut index = path.clone();
+        if !index.ends_with('/') {
+            index.push('/');
+        }
+        index.push_str("index.gph");
+        if Path::new(&index).exists() {
+            if !req.selector.ends_with('/') {
+                req.selector.push('/');
+            }
+            req.selector.push_str("index.gph");
+            return write_gophermap(w, req);
+        }
+    }
+
+    let md = fs::metadata(&path)?;
+    if path.ends_with(".gph") {
+        write_gophermap(w, req)
+    } else if md.is_file() {
         write_file(w, req)
     } else if md.is_dir() {
         write_dir(w, req)
@@ -101,6 +129,27 @@ where
         let n = f.read(&mut buf[..])?;
         bytes -= n as u64;
         w.write_all(&buf[..n])?;
+    }
+    Ok(())
+}
+
+/// Send a gophermap (menu) to the client based on a Request.
+fn write_gophermap<'a, W>(mut w: &'a W, req: Request) -> Result<()>
+where
+    &'a W: Write,
+{
+    let path = req.file_path();
+    let file = File::open(&path)?;
+    let reader = BufReader::new(file);
+    for line in reader.lines() {
+        let mut line = line?.trim_end_matches("\r\n").to_string();
+        match line.chars().filter(|&c| c == '\t').count() {
+            1 => line.push_str(&format!("\t{}\t{}", req.host, req.port)),
+            2 => line.push_str(&format!("\t{}", req.port)),
+            _ => {}
+        }
+        line.push_str("\r\n");
+        w.write_all(line.as_bytes())?;
     }
     Ok(())
 }

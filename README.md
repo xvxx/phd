@@ -8,6 +8,8 @@
 
 an esoteric gopher server. 
 
+point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher.
+
 ## todo
 
 - [ ] index.gph
