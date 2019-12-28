@@ -20,7 +20,7 @@ special files:
 
 Any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't start with an `i` will get an `i` automatically prefixed, turning it into a gopher information item. 
 
-Any `.gph` file that is marked **executable** with be run as if it were a shell script and its output will be sent to the client. CGI-BIN is back, baby.
+Any `.gph` file that is marked **executable** with be run as if it were a shell script and its output will be sent to the client. It will be passed three arguments: the query string (if any, the host, and the port. Do with them what you will. (CGI-BIN is back, baby.)
 
 For example:
 
