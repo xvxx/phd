@@ -6,7 +6,7 @@
 |
 ```
 
-esoteric gopher server. 
+an esoteric gopher server. 
 
 ## todo
 
