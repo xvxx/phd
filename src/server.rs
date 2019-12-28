@@ -52,7 +52,7 @@ where
 {
     let md = fs::metadata(&req.file_path())?;
     if md.is_file() {
-        write_text(w, req)
+        write_file(w, req)
     } else if md.is_dir() {
         write_dir(w, req)
     } else {
@@ -87,8 +87,8 @@ where
     Ok(())
 }
 
-/// Send a text file to the client based on a Request.
-fn write_text<'a, W>(mut w: &'a W, req: Request) -> Result<()>
+/// Send a file to the client based on a Request.
+fn write_file<'a, W>(mut w: &'a W, req: Request) -> Result<()>
 where
     &'a W: Write,
 {
@@ -102,7 +102,6 @@ where
         bytes -= n as u64;
         w.write_all(&buf[..n])?;
     }
-    w.write_all(b"\r\n.\r\n")?; // end gopher response
     Ok(())
 }
 
