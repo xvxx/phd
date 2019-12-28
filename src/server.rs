@@ -1,3 +1,4 @@
+use crate::{Request, Result};
 use gophermap::{GopherMenu, ItemType};
 use std::{
     fs,
@@ -10,42 +11,6 @@ use threadpool::ThreadPool;
 const MAX_WORKERS: usize = 10;
 const MAX_PEEK_SIZE: usize = 1024;
 const TCP_BUF_SIZE: usize = 1024;
-
-pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
-
-#[derive(Debug)]
-pub struct Request {
-    selector: String,
-    root: String,
-    host: String,
-    port: u16,
-}
-
-impl Request {
-    pub fn from(host: &str, port: u16, root: &str) -> Result<Request> {
-        Ok(Request {
-            host: host.into(),
-            port: port,
-            root: fs::canonicalize(root)?.to_string_lossy().into(),
-            selector: String::new(),
-        })
-    }
-
-    /// Path to the target file on disk requested by this request.
-    pub fn file_path(&self) -> String {
-        let mut path = self.root.to_string();
-        if !path.ends_with('/') {
-            path.push('/');
-        }
-        path.push_str(self.selector.replace("..", ".").trim_start_matches('/'));
-        path
-    }
-
-    /// Path to the target file relative to the server root.
-    pub fn relative_file_path(&self) -> String {
-        self.file_path().replace(&self.root, "")
-    }
-}
 
 /// Starts a Gopher server at the specified host, port, and root directory.
 pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
@@ -85,7 +50,6 @@ fn write_response<'a, W>(w: &'a W, req: Request) -> Result<()>
 where
     &'a W: Write,
 {
-    println!("file_path: {}", req.file_path());
     let md = fs::metadata(&req.file_path())?;
     if md.is_file() {
         write_text(w, req)
