@@ -1,14 +1,14 @@
-```
+<!--
       /       |
  ___ (___  ___|
 |   )|   )|   )
 |__/ |  / |__/
 |
-```
+--> <p align="center"><img src="./img/logo2.png"></p>
 
-🐀 lil gopher daemon
+`phd` is an esoteric gopher server for small gopher sites.
 
-point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher.
+point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher. executable files will be run, like cgi! 
 
 special files:
 
@@ -18,20 +18,40 @@ special files:
 - **??.gph**: visiting gopher://yoursite/1/dog/ will try to render `dog.gph` from disk.
 - **.reverse**: if this exists, the directory contents will be listed in reverse alphanumeric order. useful for phloggin'.
 
-Any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't start with an `i` will get an `i` automatically prefixed, turning it into a gopher information item. 
+any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't start with an `i` will get an `i` automatically prefixed, turning it into a gopher information item. 
 
-Any `.gph` file that is marked **executable** with be run as if it were a shell script and its output will be sent to the client. It will be passed three arguments: the query string (if any, the host, and the port. Do with them what you will. (CGI-BIN is back, baby.)
+any `.gph` file that is marked **executable** with be run as if it were a shell script and its output will be sent to the client. it will be passed three arguments: the query string (if any, the host, and the port. do with them what you will. 
 
-For example:
+for example:
 
     $ cat echo.gph
     #!/bin/sh
     echo "Hi, world! You said:" $1
+    echo "1Visit Gopherpedia	/	gopherpedia.com	70"
 
-Then:
+
+then:
 
     $ gopher-client gopher://localhost/1/echo?something
-    Hi, world! You said: something
+    [INFO] Hi, world! You said: something
+    [LINK] Visit Gopherpedia
+
+or more seriously:
+
+    $ cat figlet.gph
+    #!/bin/sh
+    figlet $1
+
+then:
+
+    $ gopher-client gopher://localhost/1/figlet?hi gopher
+    [INFO]  _     _                     _               
+    [INFO] | |__ (_)   __ _  ___  _ __ | |__   ___ _ __ 
+    [INFO] | '_ \| |  / _` |/ _ \| '_ \| '_ \ / _ \ '__|
+    [INFO] | | | | | | (_| | (_) | |_) | | | |  __/ |   
+    [INFO] |_| |_|_|  \__, |\___/| .__/|_| |_|\___|_|   
+    [INFO]             |___/      |_|                    
+
 
 ## usage
 
@@ -53,8 +73,6 @@ Then:
 
 ## todo
 
-- [ ] logo
 - [ ] script mode
-- [ ] run mode
 - [ ] log options
 - [ ] 404 message
