@@ -11,14 +11,20 @@ fn main() {
     let mut root = ".";
     let mut iter = args.iter();
     let mut host = "localhost";
-    let mut port = "70";
+    let mut port = 70;
     while let Some(arg) = iter.next() {
         match arg.as_ref() {
             "--version" | "-v" | "-version" => return print_version(),
             "--help" | "-help" => return print_help(),
             "--port" | "-p" | "-port" => {
                 if let Some(p) = iter.next() {
-                    port = p;
+                    port = p
+                        .parse()
+                        .map_err(|_| {
+                            eprintln!("bad port: {}", p);
+                            process::exit(1)
+                        })
+                        .unwrap();
                 }
             }
             "-h" => {

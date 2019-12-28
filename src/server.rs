@@ -10,129 +10,138 @@ use threadpool::ThreadPool;
 
 const MAX_WORKERS: usize = 10;
 const MAX_PEEK_SIZE: usize = 1024;
+const TCP_BUF_SIZE: usize = 1024;
 
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
+#[derive(Debug)]
 pub struct Request {
-    stream: TcpStream,
     selector: String,
     root: String,
     host: String,
-    port: String,
+    port: u16,
 }
 
-/// Starts a Gopher server at the specified root directory.
-pub fn start(host: &str, port: &str, root_dir: &str) -> Result<()> {
+impl Request {
+    pub fn from(host: &str, port: u16, root: &str) -> Result<Request> {
+        Ok(Request {
+            host: host.into(),
+            port: port,
+            root: fs::canonicalize(root)?.to_string_lossy().into(),
+            selector: String::new(),
+        })
+    }
+
+    /// Path to the target file on disk requested by this request.
+    pub fn file_path(&self) -> String {
+        let mut path = self.root.to_string();
+        path.push_str(self.selector.replace("..", ".").trim_start_matches('/'));
+        path
+    }
+
+    /// Path to the target file relative to the server root.
+    pub fn relative_file_path(&self) -> String {
+        self.file_path().replace(&self.root, "")
+    }
+}
+
+/// Starts a Gopher server at the specified host, port, and root directory.
+pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
     let addr = format!("{}:{}", host, port);
     let listener = TcpListener::bind(&addr)?;
-    let full_root_path = fs::canonicalize(&root_dir)?.to_string_lossy().to_string();
-    println!("-> Listening on {} at {}", addr, full_root_path);
+    let full_root_path = fs::canonicalize(&root)?.to_string_lossy().to_string();
     let pool = ThreadPool::new(MAX_WORKERS);
+
+    println!("-> Listening on {} at {}", addr, full_root_path);
     for stream in listener.incoming() {
         let stream = stream?;
         println!("-> Connection from: {}", stream.peer_addr()?);
-        let mut req = Request::from(
-            stream,
-            root_dir.to_string(),
-            host.to_string(),
-            port.to_string(),
-        );
+        let req = Request::from(host, port, root)?;
         pool.execute(move || {
-            if let Err(e) = req.serve() {
-                eprintln!("-> {}", e);
+            if let Err(e) = accept(stream, req) {
+                eprintln!("-! {}", e);
             }
         });
     }
     Ok(())
 }
 
-impl Request {
-    pub fn from(stream: TcpStream, root: String, host: String, port: String) -> Request {
-        Request {
-            stream,
-            root,
-            host,
-            port,
-            selector: String::new(),
-        }
+/// Reads from the client and responds.
+fn accept(stream: TcpStream, mut req: Request) -> Result<()> {
+    let reader = BufReader::new(&stream);
+    let mut lines = reader.lines();
+    if let Some(Ok(line)) = lines.next() {
+        println!("-> Received: {:?}", line);
+        req.selector = line;
+        write_response(&stream, req)?;
     }
+    Ok(())
+}
 
-    pub fn root_path_as_string(&self) -> Result<String> {
-        Ok(fs::canonicalize(&self.root)?.to_string_lossy().to_string())
-    }
-
-    pub fn path(&self) -> Result<PathBuf> {
-        let mut path = fs::canonicalize(&self.root)?;
-        path.push(self.selector.replace("..", ".").trim_start_matches('/'));
-        Ok(path)
-    }
-
-    pub fn path_as_string(&self) -> Result<String> {
-        let mut path = self
-            .path()?
-            .to_string_lossy()
-            .to_string()
-            .replace(&self.root_path_as_string()?, "");
-        if !path.ends_with('/') {
-            path.push('/');
-        }
-        Ok(path)
-    }
-
-    /// Reads from the client and responds.
-    fn serve(&mut self) -> Result<()> {
-        let reader = BufReader::new(&self.stream);
-        let mut lines = reader.lines();
-        if let Some(Ok(line)) = lines.next() {
-            println!("-> Received: {:?}", line);
-            self.selector = line;
-            self.respond()?;
-        }
-        Ok(())
-    }
-
-    /// Respond to a client's request.
-    fn respond(&mut self) -> Result<()> {
-        let md = fs::metadata(self.path()?)?;
-        if md.is_file() {
-            write_text(&self.stream, self.path()?)
-        } else if md.is_dir() {
-            self.send_dir()
-        } else {
-            Ok(())
-        }
-    }
-
-    /// Send a directory listing (menu) to the client.
-    fn send_dir(&mut self) -> Result<()> {
-        let mut dir = fs::read_dir(self.path()?)?;
-        let mut menu = GopherMenu::with_write(&self.stream);
-        let path = self.path_as_string()?;
-        while let Some(Ok(entry)) = dir.next() {
-            let mut path = path.clone();
-            let file_name = entry.file_name();
-            path.push_str(&file_name.to_string_lossy());
-            menu.write_entry(
-                file_type(&entry),
-                &file_name.to_string_lossy(),
-                &path,
-                &self.host,
-                self.port.parse()?,
-            )?;
-        }
-        menu.end()?;
+/// Writes a response to a client based on a Request.
+fn write_response<'a, W>(w: &'a W, req: Request) -> Result<()>
+where
+    &'a W: Write,
+{
+    println!("file_path: {}", req.file_path());
+    let md = fs::metadata(&req.file_path())?;
+    if md.is_file() {
+        write_text(w, req)
+    } else if md.is_dir() {
+        write_dir(w, req)
+    } else {
         Ok(())
     }
 }
 
-/// Send a text file to the client.
-fn write_text<'a, W>(mut w: &'a W, path: PathBuf) -> Result<()>
+/// Send a directory listing (menu) to the client based on a Request.
+fn write_dir<'a, W>(w: &'a W, req: Request) -> Result<()>
 where
     &'a W: Write,
 {
+    let mut dir = fs::read_dir(&req.file_path())?;
+    let mut menu = GopherMenu::with_write(w);
+    let rel_path = req.relative_file_path();
+    while let Some(Ok(entry)) = dir.next() {
+        let mut path = rel_path.clone();
+        if !path.ends_with('/') {
+            path.push('/');
+        }
+        let file_name = entry.file_name();
+        path.push_str(&file_name.to_string_lossy());
+        println!(
+            "file_type: {:?}
+        file_name: {}
+        path: {}
+        req.host: {}
+        req.port: {}",
+            file_type(&entry),
+            file_name.to_string_lossy(),
+            path,
+            req.host,
+            req.port
+        );
+        menu.write_entry(
+            file_type(&entry),
+            &file_name.to_string_lossy(),
+            &path,
+            &req.host,
+            req.port,
+        )?;
+    }
+    menu.end()?;
+    Ok(())
+}
+
+/// Send a text file to the client based on a Request.
+fn write_text<'a, W>(mut w: &'a W, req: Request) -> Result<()>
+where
+    &'a W: Write,
+{
+    let path = req.file_path();
     let md = fs::metadata(&path)?;
     let mut f = fs::File::open(&path)?;
-    let mut buf = [0; 1024];
+    let mut buf = [0; TCP_BUF_SIZE];
     let mut bytes = md.len();
     while bytes > 0 {
         let n = f.read(&mut buf[..])?;
