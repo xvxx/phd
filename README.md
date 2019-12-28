@@ -6,9 +6,9 @@
 |
 --> <p align="center"><img src="./img/logo.png"></p>
 
-`phd` is an esoteric gopher server for small gopher sites.
+`phd` is an esoteric gopher server for small gopherholes.
 
-point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher. executable files will be run, like cgi! 
+point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher. `any .gph` files will be served up as [gopermaps](https://en.wikipedia.org/wiki/Gopher_(protocol)#Source_code_of_a_menu), and executable `.gph` files will be run with their output served to the client, like cgi! 
 
 special files:
 
