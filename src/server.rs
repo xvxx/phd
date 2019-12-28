@@ -9,8 +9,14 @@ use std::{
 };
 use threadpool::ThreadPool;
 
+/// phd tries to be light on resources, so we only allow a low number
+/// of simultaneous connections.
 const MAX_WORKERS: usize = 10;
+
+/// how many bytes of a file to read when trying to guess binary vs text?
 const MAX_PEEK_SIZE: usize = 1024;
+
+/// how many bytes to read() from the socket at a time.
 const TCP_BUF_SIZE: usize = 1024;
 
 /// Starts a Gopher server at the specified host, port, and root directory.
