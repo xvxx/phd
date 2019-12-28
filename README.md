@@ -6,16 +6,14 @@
 |
 ```
 
-dirt simple gopher server.
+esoteric gopher server. 
 
 ## todo
 
-- [ ] serve directory listing
-- [ ] serve text file
-- [ ] serve binary (mp3, exe)
-- [ ] index.gophermap
-- [ ] footer.gophermap
-- [ ] header.gophermap
+- [ ] index.gph
+- [ ] footer.gph
+- [ ] header.gph
+- [ ] *.gph
 
 ## usage
 
@@ -33,5 +31,5 @@ dirt simple gopher server.
 
 - https://github.com/gophernicus/gophernicus/blob/master/README.Gophermap
 - https://gopher.zone/posts/how-to-gophermap/
-- [rfc 1346](https://tools.ietf.org/html/rfc1436)
+- [rfc 1436](https://tools.ietf.org/html/rfc1436)
 
