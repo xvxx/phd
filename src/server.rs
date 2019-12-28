@@ -68,7 +68,7 @@ where
     // check for dir.gph if we're looking for dir
     let mut gph_file = path.clone();
     gph_file.push_str(".gph");
-    if Path::new(&gph_file).exists() {
+    if fs_exists(&gph_file) {
         req.selector = req.selector.trim_end_matches('/').into();
         req.selector.push_str(".gph");
         return write_gophermap(w, req);
@@ -76,18 +76,22 @@ where
         // check for index.gph if we're looking for dir
         let mut index = path.clone();
         index.push_str("/index.gph");
-        if Path::new(&index).exists() {
+        if fs_exists(&index) {
             req.selector.push_str("/index.gph");
             return write_gophermap(w, req);
         }
     }
 
-    let md = fs::metadata(&path)?;
+    let meta = match fs::metadata(&path) {
+        Ok(meta) => meta,
+        Err(_) => return write_not_found(w, req),
+    };
+
     if path.ends_with(".gph") {
         write_gophermap(w, req)
-    } else if md.is_file() {
+    } else if meta.is_file() {
         write_file(w, req)
-    } else if md.is_dir() {
+    } else if meta.is_dir() {
         write_dir(w, req)
     } else {
         Ok(())
@@ -100,10 +104,13 @@ where
     &'a W: Write,
 {
     let path = req.file_path();
+    if !fs_exists(&path) {
+        return write_not_found(w, req);
+    }
 
     let mut header = path.clone();
     header.push_str("/header.gph");
-    if Path::new(&header).exists() {
+    if fs_exists(&header) {
         let mut sel = req.selector.clone();
         sel.push_str("/header.gph");
         write_gophermap(
@@ -116,7 +123,7 @@ where
     }
     let mut footer = path.clone();
     footer.push_str("/footer.gph");
-    if Path::new(&footer).exists() {
+    if fs_exists(&footer) {
         let mut sel = req.selector.clone();
         sel.push_str("/footer.gph");
         write_gophermap(
@@ -135,7 +142,7 @@ where
     let mut paths: Vec<_> = fs::read_dir(&path)?.filter_map(|r| r.ok()).collect();
     let mut reverse = path.clone();
     reverse.push_str("/.reverse");
-    if Path::new(&reverse).exists() {
+    if fs_exists(&reverse) {
         paths.sort_by_key(|dir| std::cmp::Reverse(dir.path()));
     } else {
         paths.sort_by_key(|dir| dir.path());
@@ -168,10 +175,10 @@ where
     &'a W: Write,
 {
     let path = req.file_path();
-    let md = fs::metadata(&path)?;
+    let meta = fs::metadata(&path)?;
     let mut f = fs::File::open(&path)?;
     let mut buf = [0; TCP_BUF_SIZE];
-    let mut bytes = md.len();
+    let mut bytes = meta.len();
     while bytes > 0 {
         let n = f.read(&mut buf[..])?;
         bytes -= n as u64;
@@ -215,6 +222,15 @@ where
     Ok(())
 }
 
+fn write_not_found<'a, W>(mut w: &'a W, req: Request) -> Result<()>
+where
+    &'a W: Write,
+{
+    let line = format!("3Not Found: {}\t/\tnone\t70\r\n", req.selector);
+    w.write_all(line.as_bytes())?;
+    Ok(())
+}
+
 /// Determine the gopher type for a DirEntry on disk.
 fn file_type(dir: &fs::DirEntry) -> ItemType {
     let metadata = match dir.metadata() {
@@ -239,6 +255,11 @@ fn file_type(dir: &fs::DirEntry) -> ItemType {
     } else {
         ItemType::Error
     }
+}
+
+/// Does the file exist? Y'know.
+fn fs_exists(path: &str) -> bool {
+    Path::new(path).exists()
 }
 
 /// Is the file at the given path executable?
