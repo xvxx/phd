@@ -20,6 +20,19 @@ special files:
 
 Any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't start with an `i` will get an `i` automatically prefixed, turning it into a gopher information item. 
 
+Any `.gph` file that is marked **executable** with be run as if it were a shell script and its output will be sent to the client. CGI-BIN is back, baby.
+
+For example:
+
+    $ cat echo.gph
+    #!/bin/sh
+    echo "iHi, world!"
+
+Then:
+
+    $ gopher-client gopher://localhost/1/echo/
+    Hi, world!
+
 ## usage
 
     phd [options] <directory>
