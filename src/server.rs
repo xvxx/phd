@@ -187,6 +187,7 @@ where
 {
     let path = req.file_path();
 
+    // Run the file and use its output as content if it's executable.
     let reader = if is_executable(&path) {
         shell(&path, &[&req.query, &req.host, &req.port.to_string()])?
     } else {
@@ -197,11 +198,13 @@ where
         let mut line = line.trim_end_matches("\r").to_string();
         match line.chars().filter(|&c| c == '\t').count() {
             0 => {
+                // Insert `i` prefix to any prefix-less lines without tabs.
                 if line.chars().nth(0) != Some('i') {
                     line.insert(0, 'i');
                 }
                 line.push_str(&format!("\t(null)\t{}\t{}", req.host, req.port))
             }
+            // Auto-add host and port to lines with just a selector.
             1 => line.push_str(&format!("\t{}\t{}", req.host, req.port)),
             2 => line.push_str(&format!("\t{}", req.port)),
             _ => {}
@@ -229,7 +232,7 @@ fn file_type(dir: &fs::DirEntry) -> ItemType {
                 ItemType::File
             }
         } else {
-            ItemType::Binary
+            ItemType::Error
         }
     } else if metadata.is_dir() {
         ItemType::Directory
