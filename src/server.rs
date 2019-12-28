@@ -4,7 +4,6 @@ use std::{
     io::prelude::*,
     io::{BufReader, Read, Write},
     net::{TcpListener, TcpStream},
-    path::PathBuf,
 };
 use threadpool::ThreadPool;
 
