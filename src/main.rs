@@ -3,11 +3,6 @@ use std::process;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
-    if args.len() < 2 {
-        print_help();
-        return;
-    }
-
     let mut root = ".";
     let mut iter = args.iter();
     let mut host = "localhost";
