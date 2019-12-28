@@ -25,7 +25,8 @@ pub struct Request {
 pub fn start(host: &str, port: &str, root_dir: &str) -> Result<()> {
     let addr = format!("{}:{}", host, port);
     let listener = TcpListener::bind(&addr)?;
-    println!("-> Listening at {}", addr);
+    let full_root_path = fs::canonicalize(&root_dir)?.to_string_lossy().to_string();
+    println!("-> Listening on {} at {}", addr, full_root_path);
     let pool = ThreadPool::new(MAX_WORKERS);
     for stream in listener.incoming() {
         let stream = stream?;
