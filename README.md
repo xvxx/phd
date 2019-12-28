@@ -29,7 +29,6 @@ for example:
     echo "Hi, world! You said:" $1
     echo "1Visit Gopherpedia	/	gopherpedia.com	70"
 
-
 then:
 
     $ gopher-client gopher://localhost/1/echo?something
@@ -100,3 +99,5 @@ just unzip/untar the `phd` program into your $PATH and get going!
 
 - [ ] script mode
 - [ ] systemd config, or something
+- [ ] TLS support
+- [ ] man page
