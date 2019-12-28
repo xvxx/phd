@@ -46,11 +46,9 @@ impl Request {
             if line.len() >= i + 1 {
                 self.query.push_str(&line[i + 1..]);
                 self.selector.push_str(&line[..i]);
-            } else {
-                self.selector.push_str(&line[..i]);
+                return;
             }
-        } else {
-            self.selector.push_str(line);
         }
+        self.selector.push_str(line);
     }
 }
