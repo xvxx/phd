@@ -19,6 +19,9 @@ const MAX_PEEK_SIZE: usize = 1024;
 /// how many bytes to read() from the socket at a time.
 const TCP_BUF_SIZE: usize = 1024;
 
+/// Files not displayed in directory listings.
+const IGNORED_FILES: [&str; 3] = ["header.gph", "footer.gph", ".reverse"];
+
 /// Starts a Gopher server at the specified host, port, and root directory.
 pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
     let addr = format!("{}:{}", host, port);
@@ -127,11 +130,18 @@ where
 
     // sort directory entries
     let mut paths: Vec<_> = fs::read_dir(&path)?.filter_map(|r| r.ok()).collect();
-    paths.sort_by_key(|dir| dir.path());
+    let mut reverse = path.clone();
+    reverse.push_str("/.reverse");
+    if Path::new(&reverse).exists() {
+        paths.sort_by_key(|dir| std::cmp::Reverse(dir.path()));
+    } else {
+        paths.sort_by_key(|dir| dir.path());
+    }
 
     for entry in paths {
         let file_name = entry.file_name();
-        if file_name == "header.gph" || file_name == "footer.gph" {
+        let f = file_name.to_string_lossy().to_string();
+        if IGNORED_FILES.contains(&f.as_ref()) {
             continue;
         }
         let mut path = rel_path.clone();

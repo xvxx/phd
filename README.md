@@ -12,10 +12,11 @@ point it at a directory and it'll serve up all its text files, sub-directories, 
 
 special files:
 
-- **header.gph**: if it exists in a directoy, its content will be shown above the directory's content. put ascii art in it.
+- **header.gph**: if it exists in a directory, its content will be shown above the directory's content. put ascii art in it.
 - **footer.gph**: same, but will be shown below a directory's content.
 - **index.gph**: completely replaces a directory's content with what's in this file.
 - **??.gph**: visiting gopher://yoursite/1/dog/ will try to render `dog.gph` on disk.
+- **.reverse**: if this exists, the directory contents will be listed in reverse alphanumeric order. useful for phloggin'.
 
 Any line in a `.gph` file that doesn't contain any tabs (`\t`) and doesn't start with an `i` will get an `i` automatically prefixed, turning it into a gopher information item. 
 
