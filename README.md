@@ -78,9 +78,9 @@ then:
 
 binaries for linux, mac, and raspberry pi are available at https://github.com/dvkt/phd/releases:
 
-- [phetch-v0.1.1-linux-x86_64.tar.gz](https://github.com/dvkt/phd/releases/download/v0.1.1/phetch-v0.1.1-linux-x86_64.tar.gz)
-- [phetch-v0.1.1-linux-armv7.tar.gz (RPi)](https://github.com/dvkt/phd/releases/download/v0.1.1/phetch-v0.1.1-linux-armv7.tar.gz)
-- [phetch-v0.1.1-macos.zip](https://github.com/dvkt/phetch/phd/download/v0.1.1/phetch-v0.1.1-macos.zip)
+- [phetch-v0.1.2-linux-x86_64.tar.gz](https://github.com/dvkt/phd/releases/download/v0.1.2/phetch-v0.1.2-linux-x86_64.tar.gz)
+- [phetch-v0.1.2-linux-armv7.tar.gz (RPi)](https://github.com/dvkt/phd/releases/download/v0.1.2/phetch-v0.1.2-linux-armv7.tar.gz)
+- [phetch-v0.1.2-macos.zip](https://github.com/dvkt/phetch/phd/download/v0.1.2/phetch-v0.1.2-macos.zip)
 
 just unzip/untar the `phd` program into your $PATH and get going!
 

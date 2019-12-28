@@ -42,7 +42,7 @@ dependencies = [
 
 [[package]]
 name = "phd"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "content_inspector 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)",
  "gophermap 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
