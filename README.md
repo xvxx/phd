@@ -4,7 +4,7 @@
 |   )|   )|   )
 |__/ |  / |__/
 |
---> <p align="center"><img src="./img/logo2.png"></p>
+--> <p align="center"><img src="./img/logo.png"></p>
 
 `phd` is an esoteric gopher server for small gopher sites.
 
