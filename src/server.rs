@@ -90,16 +90,12 @@ where
     &'a W: Write,
 {
     let path = req.file_path();
-    let mut dir = fs::read_dir(&path)?;
-    let mut menu = GopherMenu::with_write(w);
 
     let mut header = path.clone();
-    ensure_trailing_slash(&mut header);
-    header.push_str("header.gph");
+    header.push_str("/header.gph");
     if Path::new(&header).exists() {
         let mut sel = req.selector.clone();
-        ensure_trailing_slash(&mut sel);
-        sel.push_str("header.gph");
+        sel.push_str("/header.gph");
         write_gophermap(
             w,
             Request {
@@ -109,12 +105,10 @@ where
         )?;
     }
     let mut footer = path.clone();
-    ensure_trailing_slash(&mut footer);
-    footer.push_str("footer.gph");
+    footer.push_str("/footer.gph");
     if Path::new(&footer).exists() {
         let mut sel = req.selector.clone();
-        ensure_trailing_slash(&mut sel);
-        sel.push_str("footer.gph");
+        sel.push_str("/footer.gph");
         write_gophermap(
             w,
             Request {
@@ -124,8 +118,14 @@ where
         )?;
     }
 
+    let mut menu = GopherMenu::with_write(w);
     let rel_path = req.relative_file_path();
-    while let Some(Ok(entry)) = dir.next() {
+
+    // sort directory entries
+    let mut paths: Vec<_> = fs::read_dir(&path)?.filter_map(|r| r.ok()).collect();
+    paths.sort_by_key(|dir| dir.path());
+
+    for entry in paths {
         let file_name = entry.file_name();
         if file_name == "header.gph" || file_name == "footer.gph" {
             continue;
@@ -176,7 +176,12 @@ where
     for line in reader.lines() {
         let mut line = line?.trim_end_matches("\r\n").to_string();
         match line.chars().filter(|&c| c == '\t').count() {
-            0 => line.push_str(&format!("\t(null)\t{}\t{}", req.host, req.port)),
+            0 => {
+                if line.chars().nth(0) != Some('i') {
+                    line.insert(0, 'i');
+                }
+                line.push_str(&format!("\t(null)\t{}\t{}", req.host, req.port))
+            }
             1 => line.push_str(&format!("\t{}\t{}", req.host, req.port)),
             2 => line.push_str(&format!("\t{}", req.port)),
             _ => {}
