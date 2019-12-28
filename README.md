@@ -10,12 +10,14 @@ an esoteric gopher server.
 
 point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher.
 
-## todo
+special files:
 
-- [ ] index.gph
-- [ ] footer.gph
-- [ ] header.gph
-- [ ] *.gph
+- **header.gph**: if it exists in a directoy, its content will be shown above the directory's content. put ascii art in it.
+- **footer.gph**: same, but will be shown below a directory's content.
+- **index.gph**: completely replaces a directory's content with what's in this file.
+- **??.gph**: visiting gopher://yoursite/1/dog/ will try to render `dog.gph` on disk.
+
+Any line in a `.gph` file that doesn't contain any tabs (`\t`) and doesn't start with an `i` will get an `i` automatically prefixed, turning it into a gopher information item. 
 
 ## usage
 
