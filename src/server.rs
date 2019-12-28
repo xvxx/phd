@@ -2,8 +2,7 @@ use crate::{Request, Result};
 use gophermap::{GopherMenu, ItemType};
 use std::{
     fs,
-    io::prelude::*,
-    io::{BufReader, Read, Write},
+    io::{self, prelude::*, BufReader, Read, Write},
     net::{TcpListener, TcpStream},
     os::unix::fs::PermissionsExt,
     path::Path,
@@ -18,9 +17,6 @@ const MAX_WORKERS: usize = 10;
 
 /// how many bytes of a file to read when trying to guess binary vs text?
 const MAX_PEEK_SIZE: usize = 1024;
-
-/// how many bytes to read() from the socket at a time.
-const TCP_BUF_SIZE: usize = 1024;
 
 /// Files not displayed in directory listings.
 const IGNORED_FILES: [&str; 3] = ["header.gph", "footer.gph", ".reverse"];
@@ -174,16 +170,8 @@ fn write_file<'a, W>(mut w: &'a W, req: Request) -> Result<()>
 where
     &'a W: Write,
 {
-    let path = req.file_path();
-    let meta = fs::metadata(&path)?;
-    let mut f = fs::File::open(&path)?;
-    let mut buf = [0; TCP_BUF_SIZE];
-    let mut bytes = meta.len();
-    while bytes > 0 {
-        let n = f.read(&mut buf[..])?;
-        bytes -= n as u64;
-        w.write_all(&buf[..n])?;
-    }
+    let mut f = fs::File::open(&req.file_path())?;
+    io::copy(&mut f, &mut w)?;
     Ok(())
 }
 
