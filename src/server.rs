@@ -112,18 +112,6 @@ where
         }
         let file_name = entry.file_name();
         path.push_str(&file_name.to_string_lossy());
-        println!(
-            "file_type: {:?}
-        file_name: {}
-        path: {}
-        req.host: {}
-        req.port: {}",
-            file_type(&entry),
-            file_name.to_string_lossy(),
-            path,
-            req.host,
-            req.port
-        );
         menu.write_entry(
             file_type(&entry),
             &file_name.to_string_lossy(),
