@@ -1,12 +1,15 @@
 use phd;
 use std::process;
 
+const DEFAULT_HOST: &str = "127.0.0.1";
+const DEFAULT_PORT: u16 = 7070;
+
 fn main() {
     let args: Vec<String> = std::env::args().collect();
     let mut root = ".";
     let mut iter = args.iter();
-    let mut host = "localhost";
-    let mut port = 70;
+    let mut host = DEFAULT_HOST;
+    let mut port = DEFAULT_PORT;
     while let Some(arg) = iter.next() {
         match arg.as_ref() {
             "--version" | "-v" | "-version" => return print_version(),
@@ -58,13 +61,15 @@ fn print_help() {
 
 Options:
 
-    -p, --port      Port to bind to.
-    -h, --host      Hostname to use when generating links.
+    -p, --port      Port to bind to. [Default: {port}]
+    -h, --host      Hostname when generating links. [Default: {host}]
 
 Other flags:
 
     -h, --help      Print this screen.
-    -v, --version   Print phd version."
+    -v, --version   Print phd version.",
+        host = DEFAULT_HOST,
+        port = DEFAULT_PORT,
     );
 }
 
