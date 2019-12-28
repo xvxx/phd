@@ -95,7 +95,7 @@ impl Request {
     fn respond(&mut self) -> Result<()> {
         let md = fs::metadata(self.path()?)?;
         if md.is_file() {
-            self.send_text()
+            write_text(&self.stream, self.path()?)
         } else if md.is_dir() {
             self.send_dir()
         } else {
@@ -123,31 +123,32 @@ impl Request {
         menu.end()?;
         Ok(())
     }
+}
 
-    /// Send a text document to the client.
-    fn send_text(&mut self) -> Result<()> {
-        let path = self.path()?;
-        let md = fs::metadata(&path)?;
-        let mut f = fs::File::open(&path)?;
-        let mut buf = [0; 1024];
-        let mut bytes = md.len();
-        while bytes > 0 {
-            let n = f.read(&mut buf[..])?;
-            bytes -= n as u64;
-            self.stream.write_all(&buf[..n])?;
-        }
-        self.stream.write_all(b"\r\n.\r\n")?; // end gopher response
-        Ok(())
+/// Send a text file to the client.
+fn write_text<'a, W>(mut w: &'a W, path: PathBuf) -> Result<()>
+where
+    &'a W: Write,
+{
+    let md = fs::metadata(&path)?;
+    let mut f = fs::File::open(&path)?;
+    let mut buf = [0; 1024];
+    let mut bytes = md.len();
+    while bytes > 0 {
+        let n = f.read(&mut buf[..])?;
+        bytes -= n as u64;
+        w.write_all(&buf[..n])?;
     }
+    w.write_all(b"\r\n.\r\n")?; // end gopher response
+    Ok(())
 }
 
 /// Determine the gopher type for a DirEntry on disk.
 fn file_type(dir: &fs::DirEntry) -> ItemType {
-    let metadata = dir.metadata();
-    if metadata.is_err() {
-        return ItemType::Error;
-    }
-    let metadata = metadata.unwrap();
+    let metadata = match dir.metadata() {
+        Err(_) => return ItemType::Error,
+        Ok(md) => md,
+    };
 
     if metadata.is_file() {
         if let Ok(file) = fs::File::open(&dir.path()) {
