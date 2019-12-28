@@ -84,5 +84,4 @@ just unzip/untar the `phd` program into your $PATH and get going!
 ## todo
 
 - [ ] script mode
-- [ ] log options
-- [ ] 404 message
+- [ ] systemd config, or something
