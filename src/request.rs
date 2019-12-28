@@ -1,21 +1,25 @@
 use crate::Result;
 use std::fs;
 
+/// This struct represents a single gopher request.
 #[derive(Debug, Clone)]
 pub struct Request {
     pub selector: String,
+    pub query: String,
     pub root: String,
     pub host: String,
     pub port: u16,
 }
 
 impl Request {
+    /// Try to create a new request state object.
     pub fn from(host: &str, port: u16, root: &str) -> Result<Request> {
         Ok(Request {
             host: host.into(),
             port: port,
             root: fs::canonicalize(root)?.to_string_lossy().into(),
             selector: String::new(),
+            query: String::new(),
         })
     }
 
@@ -32,5 +36,21 @@ impl Request {
     /// Path to the target file relative to the server root.
     pub fn relative_file_path(&self) -> String {
         self.file_path().replace(&self.root, "")
+    }
+
+    /// Set selector + query based on what the client sent.
+    pub fn parse_request(&mut self, line: &str) {
+        self.query.clear();
+        self.selector.clear();
+        if let Some(i) = line.find('\t') {
+            if line.len() >= i + 1 {
+                self.query.push_str(&line[i + 1..]);
+                self.selector.push_str(&line[..i]);
+            } else {
+                self.selector.push_str(&line[..i]);
+            }
+        } else {
+            self.selector.push_str(line);
+        }
     }
 }

@@ -52,7 +52,7 @@ fn accept(stream: TcpStream, mut req: Request) -> Result<()> {
     let mut lines = reader.lines();
     if let Some(Ok(line)) = lines.next() {
         println!("-> Client sent: {:?}", line);
-        req.selector = line;
+        req.parse_request(&line);
         write_response(&stream, req)?;
     }
     Ok(())
