@@ -5,7 +5,7 @@ const DEFAULT_HOST: &str = "127.0.0.1";
 const DEFAULT_PORT: u16 = 7070;
 
 fn main() {
-    let args: Vec<String> = std::env::args().collect();
+    let args: Vec<String> = std::env::args().skip(1).collect();
     let mut root = ".";
     let mut iter = args.iter();
     let mut host = DEFAULT_HOST;
