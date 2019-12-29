@@ -117,19 +117,6 @@ where
             },
         )?;
     }
-    let mut footer = path.clone();
-    footer.push_str("/footer.gph");
-    if fs_exists(&footer) {
-        let mut sel = req.selector.clone();
-        sel.push_str("/footer.gph");
-        write_gophermap(
-            w,
-            Request {
-                selector: sel,
-                ..req.clone()
-            },
-        )?;
-    }
 
     let mut menu = GopherMenu::with_write(w);
     let rel_path = req.relative_file_path();
@@ -165,6 +152,21 @@ where
             req.port,
         )?;
     }
+
+    let mut footer = path.clone();
+    footer.push_str("/footer.gph");
+    if fs_exists(&footer) {
+        let mut sel = req.selector.clone();
+        sel.push_str("/footer.gph");
+        write_gophermap(
+            w,
+            Request {
+                selector: sel,
+                ..req.clone()
+            },
+        )?;
+    }
+
     menu.end()?;
     Ok(())
 }
