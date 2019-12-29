@@ -138,16 +138,20 @@ where
     let mut paths: Vec<_> = fs::read_dir(&path)?.filter_map(|r| r.ok()).collect();
     let mut reverse = path.clone();
     reverse.push_str("/.reverse");
+    let is_dir = |entry: &fs::DirEntry| match entry.file_type() {
+        Ok(t) => t.is_dir(),
+        _ => false,
+    };
     if fs_exists(&reverse) {
-        paths.sort_by_key(|dir| std::cmp::Reverse(dir.path()));
+        paths.sort_by_key(|entry| (!is_dir(&entry), std::cmp::Reverse(entry.path())));
     } else {
-        paths.sort_by_key(|dir| dir.path());
+        paths.sort_by_key(|entry| (!is_dir(&entry), entry.path()));
     }
 
     for entry in paths {
         let file_name = entry.file_name();
         let f = file_name.to_string_lossy().to_string();
-        if IGNORED_FILES.contains(&f.as_ref()) {
+        if f.chars().nth(0) == Some('.') || IGNORED_FILES.contains(&f.as_ref()) {
             continue;
         }
         let mut path = rel_path.clone();
