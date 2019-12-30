@@ -78,9 +78,9 @@ then:
 
 binaries for linux, mac, and raspberry pi are available at https://github.com/dvkt/phd/releases:
 
-- [phd-v0.1.2-linux-x86_64.tar.gz][0]
-- [phd-v0.1.2-linux-armv7.tar.gz (RPi)][1]
-- [phd-v0.1.2-macos.zip][2]
+- [phd-v0.1.3-linux-x86_64.tar.gz][0]
+- [phd-v0.1.3-linux-armv7.tar.gz (RPi)][1]
+- [phd-v0.1.3-macos.zip][2]
 
 just unzip/untar the `phd` program into your $PATH and get going!
 
@@ -101,6 +101,6 @@ just unzip/untar the `phd` program into your $PATH and get going!
 - [ ] TLS support
 - [ ] man page
 
-[0]: https://github.com/dvkt/phd/releases/download/v0.1.2/phd-v0.1.2-linux-x86_64.tar.gz
-[1]: https://github.com/dvkt/phd/releases/download/v0.1.2/phd-v0.1.2-linux-armv7.tar.gz
-[2]: https://github.com/dvkt/phd/releases/download/v0.1.2/phd-v0.1.2-macos.zip
+[0]: https://github.com/dvkt/phd/releases/download/v0.1.3/phd-v0.1.3-linux-x86_64.tar.gz
+[1]: https://github.com/dvkt/phd/releases/download/v0.1.3/phd-v0.1.3-linux-armv7.tar.gz
+[2]: https://github.com/dvkt/phd/releases/download/v0.1.3/phd-v0.1.3-macos.zip
