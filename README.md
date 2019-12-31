@@ -8,19 +8,31 @@
 
 `phd` is an esoteric gopher server for small gopherholes.
 
-point it at a directory and it'll serve up all its text files, sub-directories, and binary files over gopher. any `.gph` files will be served up as [gopermaps](https://en.wikipedia.org/wiki/Gopher_(protocol)#Source_code_of_a_menu), and executable `.gph` files will be run as a script with their output served to the client, like cgi!
+point it at a directory and it'll serve up all its text files,
+sub-directories, and binary files over gopher. any `.gph` files will
+be served up as [gopermaps][map] and executable `.gph` files will be
+run as a script with their output served to the client, like cgi!
 
 special files:
 
-- **header.gph**: if it exists in a directory, its content will be shown above the directory's content. put ascii art in it.
+- **header.gph**: if it exists in a directory, its content will be
+  shown above the directory's content. put ascii art in it.
 - **footer.gph**: same, but will be shown below a directory's content.
-- **index.gph**: completely replaces a directory's content with what's in this file.
-- **??.gph**: visiting gopher://yoursite/1/dog/ will try to render `dog.gph` from disk.
-- **.reverse**: if this exists, the directory contents will be listed in reverse alphanumeric order. useful for phloggin'.
+- **index.gph**: completely replaces a directory's content with what's
+  in this file.
+- **??.gph**: visiting gopher://yoursite/1/dog/ will try to render
+  `dog.gph` from disk. 
+- **.reverse**: if this exists, the directory contents will be listed
+  in reverse alphanumeric order. useful for phloggin'.
 
-any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't start with an `i` will get an `i` automatically prefixed, turning it into a gopher information item.
+any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't
+start with an `i` will get an `i` automatically prefixed, turning it
+into a gopher information item.
 
-any `.gph` file that is marked **executable** with be run as if it were a shell script and its output will be sent to the client. it will be passed three arguments: the query string (if any, the host, and the port. do with them what you will.
+any `.gph` file that is marked **executable** with be run as if it
+were a shell script and its output will be sent to the client. it will
+be passed three arguments: the query string (if any, the host, and the
+port. do with them what you will.
 
 for example:
 
@@ -70,13 +82,15 @@ then:
 
     Examples:
 
-        phd ./path/to/gopher/root    # Serve directory over port 7070.
-        phd -p 70 docs               # Serve 'docs' directory on port 70
-        phd -h gopher.com            # Serve current dir on 7070 using hostname "gopher.com".
+        phd ./path/to/site  # Serve directory over port 7070.
+        phd -p 70 docs      # Serve 'docs' directory on port 70
+        phd -h gopher.com   # Serve current directory over port 7070
+                            # using hostname "gopher.com"
 
 ## installation
 
-binaries for linux, mac, and raspberry pi are available at https://github.com/dvkt/phd/releases:
+binaries for linux, mac, and raspberry pi are available
+at https://github.com/dvkt/phd/releases:
 
 - [phd-v0.1.3-linux-x86_64.tar.gz][0]
 - [phd-v0.1.3-linux-armv7.tar.gz (RPi)][1]
@@ -96,11 +110,13 @@ just unzip/untar the `phd` program into your $PATH and get going!
 
 ## todo
 
-- [ ] script mode
+- [ ] script/serverless mode
 - [ ] systemd config, or something
+- [ ] brew services
 - [ ] TLS support
 - [ ] man page
 
 [0]: https://github.com/dvkt/phd/releases/download/v0.1.3/phd-v0.1.3-linux-x86_64.tar.gz
 [1]: https://github.com/dvkt/phd/releases/download/v0.1.3/phd-v0.1.3-linux-armv7.tar.gz
 [2]: https://github.com/dvkt/phd/releases/download/v0.1.3/phd-v0.1.3-macos.zip
+[map]: https://en.wikipedia.org/wiki/Gopher_(protocol)#Source_code_of_a_menu
