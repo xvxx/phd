@@ -23,7 +23,7 @@ const IGNORED_FILES: [&str; 3] = ["header.gph", "footer.gph", ".reverse"];
 
 /// Starts a Gopher server at the specified host, port, and root directory.
 pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
-    let addr = format!("{}:{}", "[::1]", port);
+    let addr = format!("{}:{}", "0.0.0.0", port);
     let listener = TcpListener::bind(&addr)?;
     let full_root_path = fs::canonicalize(&root)?.to_string_lossy().to_string();
     let pool = ThreadPool::new(MAX_WORKERS);
