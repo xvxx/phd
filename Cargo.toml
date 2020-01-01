@@ -1,6 +1,6 @@
 [package]
 name = "phd"
-version = "0.1.3"
+version = "0.1.4-dev"
 authors = ["dvkt <c@dvkt.io>"]
 license = "MIT"
 edition = "2018"
@@ -27,4 +27,5 @@ gophermap = "0.1.2"
 pre-release-replacements = [
   {file="README.md", search="phd-v.+-", replace="{{crate_name}}-v{{version}}-"},
 ]
+dev-version-ext = "dev"
 
