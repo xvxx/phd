@@ -21,7 +21,7 @@ special files:
 - **index.gph**: completely replaces a directory's content with what's
   in this file.
 - **??.gph**: visiting gopher://yoursite/1/dog/ will try to render
-  `dog.gph` from disk. 
+  `dog.gph` from disk.
 - **.reverse**: if this exists, the directory contents will be listed
   in reverse alphanumeric order. useful for phloggin'.
 
@@ -112,9 +112,9 @@ just unzip/untar the `phd` program into your $PATH and get going!
 
 - [ ] script/serverless mode
 - [ ] systemd config, or something
-- [ ] brew services
 - [ ] TLS support
 - [ ] man page
+- [ ] ipv6
 
 [0]: https://github.com/dvkt/phd/releases/download/v0.1.3/phd-v0.1.3-linux-x86_64.tar.gz
 [1]: https://github.com/dvkt/phd/releases/download/v0.1.3/phd-v0.1.3-linux-armv7.tar.gz
