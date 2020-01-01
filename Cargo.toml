@@ -22,3 +22,9 @@ opt-level = 'z'  # Optimize for size.
 content_inspector = "0.2.4"
 threadpool = "1.7.1"
 gophermap = "0.1.2"
+
+[package.metadata.release]
+pre-release-replacements = [
+  {file="README.md", search="phd-v.+-", replace="{{crate_name}}-v{{version}}-"},
+]
+
