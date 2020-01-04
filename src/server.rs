@@ -1,4 +1,4 @@
-use crate::{Request, Result};
+use crate::{color, Request, Result};
 use gophermap::{GopherMenu, ItemType};
 use std::{
     fs,
@@ -28,14 +28,26 @@ pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
     let full_root_path = fs::canonicalize(&root)?.to_string_lossy().to_string();
     let pool = ThreadPool::new(MAX_WORKERS);
 
-    println!("-> Listening on {} at {}", addr, full_root_path);
+    println!(
+        "{}- Listening on {} at {}{}",
+        color::Yellow,
+        addr,
+        full_root_path,
+        color::Reset
+    );
     for stream in listener.incoming() {
         let stream = stream?;
-        println!("-> Connection from: {}", stream.peer_addr()?);
+        println!(
+            "{}┌ Connection{} from {}{}",
+            color::Green,
+            color::Reset,
+            color::Magenta,
+            stream.peer_addr()?
+        );
         let req = Request::from(host, port, root)?;
         pool.execute(move || {
             if let Err(e) = accept(stream, req) {
-                eprintln!("-! {}", e);
+                eprintln!("{}└ {}{}", color::Red, e, color::Reset);
             }
         });
     }
@@ -47,7 +59,13 @@ fn accept(stream: TcpStream, mut req: Request) -> Result<()> {
     let reader = BufReader::new(&stream);
     let mut lines = reader.lines();
     if let Some(Ok(line)) = lines.next() {
-        println!("-> Client sent: {:?}", line);
+        println!(
+            "{}│{} Client sent: {:?}{}",
+            color::Green,
+            color::Reset,
+            line,
+            color::Reset
+        );
         req.parse_request(&line);
         write_response(&stream, req)?;
     }
