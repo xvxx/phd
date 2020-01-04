@@ -1,3 +1,4 @@
+pub mod color;
 pub mod request;
 pub mod server;
 
