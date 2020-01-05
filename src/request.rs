@@ -50,5 +50,12 @@ impl Request {
             }
         }
         self.selector.push_str(line);
+
+        // strip trailing /
+        if let Some(last) = self.selector.chars().last() {
+            if last == '/' {
+                self.selector.pop();
+            }
+        }
     }
 }
