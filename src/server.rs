@@ -64,7 +64,7 @@ fn accept(stream: TcpStream, mut req: Request) -> Result<()> {
     let mut lines = reader.lines();
     if let Some(Ok(line)) = lines.next() {
         println!(
-            "{}│{} Client sent: {}{:?}{}",
+            "{}│{} Client sent:\t{}{:?}{}",
             color::Green,
             color::Reset,
             color::Cyan,
@@ -191,6 +191,15 @@ where
     }
 
     menu.end()?;
+    println!(
+        "{}│{} Server reply:\t{}DIR {}{}{}",
+        color::Green,
+        color::Reset,
+        color::Yellow,
+        color::Bold,
+        req.relative_file_path(),
+        color::Reset,
+    );
     Ok(())
 }
 
@@ -199,8 +208,18 @@ fn write_file<'a, W>(mut w: &'a W, req: Request) -> Result<()>
 where
     &'a W: Write,
 {
-    let mut f = fs::File::open(&req.file_path())?;
+    let path = req.file_path();
+    let mut f = fs::File::open(&path)?;
     io::copy(&mut f, &mut w)?;
+    println!(
+        "{}│{} Server reply:\t{}FILE {}{}{}",
+        color::Green,
+        color::Reset,
+        color::Yellow,
+        color::Bold,
+        req.relative_file_path(),
+        color::Reset,
+    );
     Ok(())
 }
 
@@ -215,7 +234,7 @@ where
     let reader = if is_executable(&path) {
         shell(&path, &[&req.query, &req.host, &req.port.to_string()])?
     } else {
-        fs::read_to_string(path)?
+        fs::read_to_string(&path)?
     };
 
     for line in reader.lines() {
@@ -236,6 +255,15 @@ where
         line.push_str("\r\n");
         w.write_all(line.as_bytes())?;
     }
+    println!(
+        "{}│{} Server reply:\t{}MAP {}{}{}",
+        color::Green,
+        color::Reset,
+        color::Yellow,
+        color::Bold,
+        req.relative_file_path(),
+        color::Reset,
+    );
     Ok(())
 }
 
@@ -244,6 +272,13 @@ where
     &'a W: Write,
 {
     let line = format!("3Not Found: {}\t/\tnone\t70\r\n", req.selector);
+    println!(
+        "{}│ Not found: {}{}{}",
+        color::Red,
+        color::Cyan,
+        req.relative_file_path(),
+        color::Reset,
+    );
     w.write_all(line.as_bytes())?;
     Ok(())
 }
