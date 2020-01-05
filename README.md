@@ -4,7 +4,11 @@
 |   )|   )|   )
 |__/ |  / |__/
 |
---> <p align="center"><img src="./img/logo.png"></p>
+--> <p align="center"> <img src="./img/logo.png"> <br> 
+<a href="https://github.com/dvkt/phd/releases">
+<img src="https://img.shields.io/github/v/release/dvkt/phd?include_prereleases">
+</a>
+</p>
 
 `phd` is an esoteric gopher server for small gopherholes.
 
