@@ -29,9 +29,13 @@ pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
     let pool = ThreadPool::new(MAX_WORKERS);
 
     println!(
-        "{}- Listening on {} at {}{}",
+        "{}┬ Listening {}on {}{}{} at {}{}{}",
+        color::Yellow,
+        color::Reset,
         color::Yellow,
         addr,
+        color::Reset,
+        color::Blue,
         full_root_path,
         color::Reset
     );
@@ -60,9 +64,10 @@ fn accept(stream: TcpStream, mut req: Request) -> Result<()> {
     let mut lines = reader.lines();
     if let Some(Ok(line)) = lines.next() {
         println!(
-            "{}│{} Client sent: {:?}{}",
+            "{}│{} Client sent: {}{:?}{}",
             color::Green,
             color::Reset,
+            color::Cyan,
             line,
             color::Reset
         );
