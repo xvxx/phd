@@ -325,7 +325,7 @@ fn shell(path: &str, args: &[&str]) -> Result<String> {
 }
 
 /// Sort directory paths: dirs first, files 2nd, version #s respected.
-fn sort_paths(dir_path: &str, reverse_sort: bool) -> Result<Vec<DirEntry>> {
+fn sort_paths(dir_path: &str, reverse: bool) -> Result<Vec<DirEntry>> {
     let mut paths: Vec<_> = fs::read_dir(dir_path)?.filter_map(|r| r.ok()).collect();
     let is_dir = |entry: &fs::DirEntry| match entry.file_type() {
         Ok(t) => t.is_dir(),
@@ -336,7 +336,7 @@ fn sort_paths(dir_path: &str, reverse_sort: bool) -> Result<Vec<DirEntry>> {
         let b_is_dir = is_dir(b);
         if a_is_dir && b_is_dir || !a_is_dir && !b_is_dir {
             let ord = alphanumeric_sort::compare_os_str(a.path().as_ref(), b.path().as_ref());
-            if reverse_sort {
+            if reverse {
                 ord.reverse()
             } else {
                 ord
