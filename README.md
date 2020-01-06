@@ -4,7 +4,11 @@
 |   )|   )|   )
 |__/ |  / |__/
 |
---> <p align="center"><img src="./img/logo.png"></p>
+--> <p align="center"> <img src="./img/logo.png"> <br> 
+<a href="https://github.com/dvkt/phd/releases">
+<img src="https://img.shields.io/github/v/release/dvkt/phd?include_prereleases">
+</a>
+</p>
 
 `phd` is an esoteric gopher server for small gopherholes.
 
@@ -13,7 +17,7 @@ sub-directories, and binary files over gopher. any `.gph` files will
 be served up as [gopermaps][map] and executable `.gph` files will be
 run as a script with their output served to the client, like cgi!
 
-special files:
+### special files:
 
 - **header.gph**: if it exists in a directory, its content will be
   shown above the directory's content. put ascii art in it.
@@ -29,6 +33,8 @@ any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't
 start with an `i` will get an `i` automatically prefixed, turning it
 into a gopher information item.
 
+### dynamic content:
+
 any `.gph` file that is marked **executable** with be run as if it
 were a shell script and its output will be sent to the client. it will
 be passed three arguments: the query string (if any, the host, and the
@@ -36,10 +42,12 @@ port. do with them what you will.
 
 for example:
 
-    $ cat echo.gph
-    #!/bin/sh
-    echo "Hi, world! You said:" $1
-    echo "1Visit Gopherpedia	/	gopherpedia.com	70"
+```sh
+$ cat echo.gph
+#!/bin/sh
+echo "Hi, world! You said:" $1
+echo "1Visit Gopherpedia	/	gopherpedia.com	70"
+```
 
 then:
 
@@ -49,9 +57,11 @@ then:
 
 or more seriously:
 
-    $ cat figlet.gph
-    #!/bin/sh
-    figlet $1
+```sh
+$ cat figlet.gph
+#!/bin/sh
+figlet $1
+```
 
 then:
 
@@ -63,6 +73,42 @@ then:
     [INFO] |_| |_|_|  \__, |\___/| .__/|_| |_|\___|_|
     [INFO]             |___/      |_|
 
+### ruby on rails:
+
+`sh` is fun, but for serious work you need a serious scripting
+language like Ruby or PHP or Node.JS:
+
+```ruby
+$ cat sizes.gph
+#!/usr/bin/env ruby
+
+def filesize(file)
+    (size=File.size file) > (k=1024) ? "#{size/k}K" : "#{size}B"
+end
+
+puts "~ file sizes ~"
+spaces = 20
+Dir[__dir__ + "/*"].each do |entry|
+    name = File.basename entry
+    puts "#{name}#{' ' * (spaces - name.length)}#{filesize entry}"
+end
+```
+
+now you can finally share the file sizes of a directory with the world
+of Gopher! 
+
+    $ phetch -r 0.0.0.0:7070/1/sizes
+    i~ file sizes ~	(null)	127.0.0.1	7070
+    iCargo.toml          731B	(null)	127.0.0.1	7070
+    iLICENSE             1K	(null)	127.0.0.1	7070
+    iMakefile            724B	(null)	127.0.0.1	7070
+    itarget              288B	(null)	127.0.0.1	7070
+    iphd                 248K	(null)	127.0.0.1	7070
+    iCargo.lock          2K	(null)	127.0.0.1	7070
+    iREADME.md           4K	(null)	127.0.0.1	7070
+    img                 96B	(null)	127.0.0.1	7070
+    isizes.gph           276B	(null)	127.0.0.1	7070
+    isrc                 224B	(null)	127.0.0.1	7070
 
 ## usage
 
