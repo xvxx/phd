@@ -18,11 +18,6 @@ codegen-units = 1
 panic = 'abort'
 opt-level = 'z'  # Optimize for size.
 
-[dependencies]
-content_inspector = "0.2.4"
-threadpool = "1.7.1"
-gophermap = "0.1.2"
-
 [package.metadata.release]
 pre-release-replacements = [
   {file="README.md", search="phd-v\\d+\\.\\d+\\.\\d+-", replace="{{crate_name}}-v{{version}}-"},
@@ -30,3 +25,8 @@ pre-release-replacements = [
 ]
 dev-version-ext = "dev"
 
+[dependencies]
+content_inspector = "0.2.4"
+threadpool = "1.7.1"
+gophermap = "0.1.2"
+alphanumeric-sort = "1.0.11"

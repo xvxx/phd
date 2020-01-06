@@ -1,7 +1,7 @@
 use crate::{color, Request, Result};
 use gophermap::{GopherMenu, ItemType};
 use std::{
-    fs,
+    fs::{self, DirEntry},
     io::{self, prelude::*, BufReader, Read, Write},
     net::{TcpListener, TcpStream},
     os::unix::fs::PermissionsExt,
@@ -144,20 +144,8 @@ where
     let mut menu = GopherMenu::with_write(w);
     let rel_path = req.relative_file_path();
 
-    // sort directory entries
-    let mut paths: Vec<_> = fs::read_dir(&path)?.filter_map(|r| r.ok()).collect();
-    let mut reverse = path.clone();
-    reverse.push_str("/.reverse");
-    let is_dir = |entry: &fs::DirEntry| match entry.file_type() {
-        Ok(t) => t.is_dir(),
-        _ => false,
-    };
-    if fs_exists(&reverse) {
-        paths.sort_by_key(|entry| (!is_dir(&entry), std::cmp::Reverse(entry.path())));
-    } else {
-        paths.sort_by_key(|entry| (!is_dir(&entry), entry.path()));
-    }
-
+    // show directory entries
+    let paths = sort_paths(&path)?;
     for entry in paths {
         let file_name = entry.file_name();
         let f = file_name.to_string_lossy().to_string();
@@ -330,5 +318,42 @@ fn shell(path: &str, args: &[&str]) -> Result<String> {
         Ok(str::from_utf8(&output.stdout)?.to_string())
     } else {
         Ok(str::from_utf8(&output.stderr)?.to_string())
+    }
+}
+
+/// Sort directory paths: dirs first, files 2nd, version #s respected.
+fn sort_paths(dir_path: &str) -> Result<Vec<DirEntry>> {
+    let mut paths: Vec<_> = fs::read_dir(dir_path)?.filter_map(|r| r.ok()).collect();
+    let mut reverse = dir_path.to_string();
+    reverse.push_str("/.reverse");
+    let is_dir = |entry: &fs::DirEntry| match entry.file_type() {
+        Ok(t) => t.is_dir(),
+        _ => false,
+    };
+    if fs_exists(&reverse) {
+        paths.sort_by_key(|entry| (!is_dir(&entry), std::cmp::Reverse(entry.path())));
+    } else {
+        paths.sort_by_key(|entry| (!is_dir(&entry), entry.path()));
+    }
+    Ok(paths)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    macro_rules! str_path {
+        ($e:expr) => {
+            $e.path()
+                .to_str()
+                .unwrap()
+                .trim_start_matches("tests/sort/")
+        };
+    }
+
+    #[test]
+    fn test_sort_directory() {
+        let paths = sort_paths("tests/sort").unwrap();
+        assert_eq!(str_path!(paths[0]), "phetch-v0.1.11-linux-armv7.tgz");
     }
 }
