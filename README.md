@@ -42,10 +42,12 @@ port. do with them what you will.
 
 for example:
 
-    $ cat echo.gph
-    #!/bin/sh
-    echo "Hi, world! You said:" $1
-    echo "1Visit Gopherpedia	/	gopherpedia.com	70"
+```sh
+$ cat echo.gph
+#!/bin/sh
+echo "Hi, world! You said:" $1
+echo "1Visit Gopherpedia	/	gopherpedia.com	70"
+```
 
 then:
 
@@ -55,9 +57,11 @@ then:
 
 or more seriously:
 
-    $ cat figlet.gph
-    #!/bin/sh
-    figlet $1
+```sh
+$ cat figlet.gph
+#!/bin/sh
+figlet $1
+```
 
 then:
 
@@ -74,19 +78,21 @@ then:
 `sh` is fun, but for serious work you need a serious scripting
 language like Ruby or PHP or Node.JS:
 
-    $ cat sizes.gph
-    #!/usr/bin/env ruby
+```ruby
+$ cat sizes.gph
+#!/usr/bin/env ruby
 
-    def filesize(file)
-      (size=File.size file) > (k=1024) ? "#{size/k}K" : "#{size}B"
-    end
+def filesize(file)
+    (size=File.size file) > (k=1024) ? "#{size/k}K" : "#{size}B"
+end
 
-    puts "~ file sizes ~"
-    spaces = 20
-    Dir[__dir__ + "/*"].each do |entry|
-    name = File.basename entry
-    puts "#{name}#{' ' * (spaces - name.length)}#{filesize entry}"
-    end
+puts "~ file sizes ~"
+spaces = 20
+Dir[__dir__ + "/*"].each do |entry|
+name = File.basename entry
+puts "#{name}#{' ' * (spaces - name.length)}#{filesize entry}"
+end
+```
 
 now you can finally share the file sizes of a directory with the world
 of Gopher! 
