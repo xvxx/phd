@@ -89,8 +89,8 @@ end
 puts "~ file sizes ~"
 spaces = 20
 Dir[__dir__ + "/*"].each do |entry|
-name = File.basename entry
-puts "#{name}#{' ' * (spaces - name.length)}#{filesize entry}"
+    name = File.basename entry
+    puts "#{name}#{' ' * (spaces - name.length)}#{filesize entry}"
 end
 ```
 
