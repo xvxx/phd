@@ -135,8 +135,8 @@ of Gopher!
 
 ## installation
 
-binaries for linux, mac, and raspberry pi are available
-at https://github.com/dvkt/phd/releases:
+binaries for linux, mac, and raspberry pi are available at 
+gopher://phkt.io/1/releases/phd and https://github.com/dvkt/phd/releases:
 
 - [phd-v0.1.5-linux-x86_64.tar.gz][0]
 - [phd-v0.1.5-linux-armv7.tar.gz (RPi)][1]
