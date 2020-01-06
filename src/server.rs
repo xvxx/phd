@@ -1,6 +1,7 @@
 use crate::{color, Request, Result};
 use gophermap::{GopherMenu, ItemType};
 use std::{
+    cmp::Ordering,
     fs::{self, DirEntry},
     io::{self, prelude::*, BufReader, Read, Write},
     net::{TcpListener, TcpStream},
@@ -145,7 +146,9 @@ where
     let rel_path = req.relative_file_path();
 
     // show directory entries
-    let paths = sort_paths(&path)?;
+    let mut reverse = path.to_string();
+    reverse.push_str("/.reverse");
+    let paths = sort_paths(&path, fs_exists(&reverse))?;
     for entry in paths {
         let file_name = entry.file_name();
         let f = file_name.to_string_lossy().to_string();
@@ -322,19 +325,30 @@ fn shell(path: &str, args: &[&str]) -> Result<String> {
 }
 
 /// Sort directory paths: dirs first, files 2nd, version #s respected.
-fn sort_paths(dir_path: &str) -> Result<Vec<DirEntry>> {
+fn sort_paths(dir_path: &str, reverse_sort: bool) -> Result<Vec<DirEntry>> {
     let mut paths: Vec<_> = fs::read_dir(dir_path)?.filter_map(|r| r.ok()).collect();
-    let mut reverse = dir_path.to_string();
-    reverse.push_str("/.reverse");
     let is_dir = |entry: &fs::DirEntry| match entry.file_type() {
         Ok(t) => t.is_dir(),
         _ => false,
     };
-    if fs_exists(&reverse) {
-        paths.sort_by_key(|entry| (!is_dir(&entry), std::cmp::Reverse(entry.path())));
-    } else {
-        paths.sort_by_key(|entry| (!is_dir(&entry), entry.path()));
-    }
+    paths.sort_by(|a, b| {
+        let a_is_dir = is_dir(a);
+        let b_is_dir = is_dir(b);
+        let ord = if a_is_dir && b_is_dir || !a_is_dir && !b_is_dir {
+            alphanumeric_sort::compare_os_str(a.path().as_ref(), b.path().as_ref())
+        } else if is_dir(a) {
+            Ordering::Less
+        } else if is_dir(b) {
+            Ordering::Greater
+        } else {
+            Ordering::Equal // what
+        };
+        if reverse_sort {
+            ord.reverse()
+        } else {
+            ord
+        }
+    });
     Ok(paths)
 }
 
@@ -353,7 +367,21 @@ mod tests {
 
     #[test]
     fn test_sort_directory() {
-        let paths = sort_paths("tests/sort").unwrap();
-        assert_eq!(str_path!(paths[0]), "phetch-v0.1.11-linux-armv7.tgz");
+        let paths = sort_paths("tests/sort", false).unwrap();
+        assert_eq!(str_path!(paths[0]), "phetch-v0.1.7-linux-armv7.tar.gz");
+        assert_eq!(
+            str_path!(paths[paths.len() - 1]),
+            "phetch-v0.1.11-macos.zip"
+        );
+    }
+
+    #[test]
+    fn test_rsort_directory() {
+        let paths = sort_paths("tests/sort", true).unwrap();
+        assert_eq!(str_path!(paths[0]), "phetch-v0.1.11-macos.zip");
+        assert_eq!(
+            str_path!(paths[paths.len() - 1]),
+            "phetch-v0.1.7-linux-armv7.tar.gz"
+        );
     }
 }
