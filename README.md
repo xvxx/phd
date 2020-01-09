@@ -161,6 +161,7 @@ just unzip/untar the `phd` program into your $PATH and get going!
 - [ ] TLS support
 - [ ] man page
 - [ ] ipv6
+- [ ] user input sanitization tests
 
 [0]: https://github.com/dvkt/phd/releases/download/v0.1.6/phd-v0.1.6-linux-x86_64.tar.gz
 [1]: https://github.com/dvkt/phd/releases/download/v0.1.6/phd-v0.1.6-linux-armv7.tar.gz
