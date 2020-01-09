@@ -10,37 +10,40 @@
 </a>
 </p>
 
-`phd` is an esoteric gopher server for small gopherholes.
+`phd` is a small, easy-to-use gopher server.
 
-point it at a directory and it'll serve up all its text files,
-sub-directories, and binary files over gopher. any `.gph` files will
+Point it at a directory and it'll serve up all its text files,
+sub-directories, and binary files over gopher. Any `.gph` files will
 be served up as [gopermaps][map] and executable `.gph` files will be
-run as a script with their output served to the client, like cgi!
+run as a script with their output served to the client, like the
+glorious cgi-bin days of yore!
 
 ### special files:
 
-- **header.gph**: if it exists in a directory, its content will be
-  shown above the directory's content. put ascii art in it.
-- **footer.gph**: same, but will be shown below a directory's content.
-- **index.gph**: completely replaces a directory's content with what's
+- **header.gph**: If it exists in a directory, its content will be
+  shown above the directory's content. Put ASCII art in it.
+- **footer.gph**: Same, but will be shown below a directory's content.
+- **index.gph**: Completely replaces a directory's content with what's
   in this file.
-- **??.gph**: visiting gopher://yoursite/1/dog/ will try to render
-  `dog.gph` from disk.
-- **.reverse**: if this exists, the directory contents will be listed
-  in reverse alphanumeric order. useful for phloggin'.
+- **??.gph**: Visiting gopher://yoursite/1/dog/ will try to render
+  `dog.gph` from disk. Visiting /1/dog.gph will render the raw content
+  of the .gph file.
+- **.reverse**: If this exists, the directory contents will be listed
+  in reverse alphanumeric order. Useful for phloggin', if you date
+  your posts.
 
-any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't
+Any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't
 start with an `i` will get an `i` automatically prefixed, turning it
 into a gopher information item.
 
 ### dynamic content:
 
-any `.gph` file that is marked **executable** with be run as if it
+Any `.gph` file that is marked **executable** with be run as if it
 were a shell script and its output will be sent to the client. it will
 be passed three arguments: the query string (if any, the host, and the
 port. do with them what you will.
 
-for example:
+For example:
 
 ```sh
 $ cat echo.gph
@@ -49,13 +52,13 @@ echo "Hi, world! You said:" $1
 echo "1Visit Gopherpedia	/	gopherpedia.com	70"
 ```
 
-then:
+Then:
 
     $ gopher-client gopher://localhost/1/echo?something
     [INFO] Hi, world! You said: something
     [LINK] Visit Gopherpedia
 
-or more seriously:
+Or more seriously:
 
 ```sh
 $ cat figlet.gph
@@ -94,7 +97,7 @@ Dir[__dir__ + "/*"].each do |entry|
 end
 ```
 
-now you can finally share the file sizes of a directory with the world
+Now you can finally share the file sizes of a directory with the world
 of Gopher! 
 
     $ phetch -r 0.0.0.0:7070/1/sizes
@@ -111,8 +114,6 @@ of Gopher!
     isrc                 224B	(null)	127.0.0.1	7070
 
 ## usage
-
-    Usage:
 
         phd [options] <root directory>
 
@@ -135,14 +136,14 @@ of Gopher!
 
 ## installation
 
-binaries for linux, mac, and raspberry pi are available at 
+Binaries for linux, mac, and raspberry pi are available at 
 gopher://phkt.io/1/releases/phd and https://github.com/dvkt/phd/releases:
 
 - [phd-v0.1.6-linux-x86_64.tar.gz][0]
 - [phd-v0.1.6-linux-armv7.tar.gz (RPi)][1]
 - [phd-v0.1.6-macos.zip][2]
 
-just unzip/untar the `phd` program into your $PATH and get going!
+Just unzip/untar the `phd` program into your $PATH and get going!
 
 ## development
 
