@@ -1,12 +1,12 @@
 [package]
 name = "phd"
 version = "0.1.7-dev"
-authors = ["dvkt <c@dvkt.io>"]
+authors = ["chris west <c@xvxx.io>"]
 license = "MIT"
 edition = "2018"
 description = "an esoteric gopher server"
 readme = "README.md"
-repository = "https://github.com/dvkt/phd"
+repository = "https://github.com/xvxx/phd"
 keywords = ["gopher", "server", "daemon"]
 exclude = [
     "img/*"
@@ -30,3 +30,4 @@ content_inspector = "0.2.4"
 threadpool = "1.7.1"
 gophermap = "0.1.2"
 alphanumeric-sort = "1.0.11"
+shell-escape = "0.1.4"
