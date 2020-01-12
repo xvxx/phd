@@ -229,22 +229,7 @@ where
     };
 
     for line in reader.lines() {
-        let mut line = line.trim_end_matches("\r").to_string();
-        match line.chars().filter(|&c| c == '\t').count() {
-            0 => {
-                // Insert `i` prefix to any prefix-less lines without tabs.
-                if line.chars().nth(0) != Some('i') {
-                    line.insert(0, 'i');
-                }
-                line.push_str(&format!("\t(null)\t{}\t{}", req.host, req.port))
-            }
-            // Auto-add host and port to lines with just a selector.
-            1 => line.push_str(&format!("\t{}\t{}", req.host, req.port)),
-            2 => line.push_str(&format!("\t{}", req.port)),
-            _ => {}
-        }
-        line.push_str("\r\n");
-        w.write_all(line.as_bytes())?;
+        w.write_all(gph_line_to_gopher(line, &req).as_bytes())?;
     }
     println!(
         "{}│{} Server reply:\t{}MAP {}{}{}",
@@ -256,6 +241,28 @@ where
         color::Reset,
     );
     Ok(())
+}
+
+/// Given a single line from a .gph file, convert it into a
+/// Gopher-format line. Supports a basic format where lines without \t
+/// get an `i` prefixed, and the Gophernicus format.
+fn gph_line_to_gopher(line: &str, req: &Request) -> String {
+    let mut line = line.trim_end_matches("\r").to_string();
+    match line.chars().filter(|&c| c == '\t').count() {
+        0 => {
+            // Insert `i` prefix to any prefix-less lines without tabs.
+            if line.chars().nth(0) != Some('i') {
+                line.insert(0, 'i');
+            }
+            line.push_str(&format!("\t(null)\t{}\t{}", req.host, req.port))
+        }
+        // Auto-add host and port to lines with just a selector.
+        1 => line.push_str(&format!("\t{}\t{}", req.host, req.port)),
+        2 => line.push_str(&format!("\t{}", req.port)),
+        _ => {}
+    }
+    line.push_str("\r\n");
+    line
 }
 
 fn write_not_found<'a, W>(mut w: &'a W, req: Request) -> Result<()>
@@ -384,6 +391,26 @@ mod tests {
         assert_eq!(
             str_path!(paths[paths.len() - 1]),
             "phetch-v0.1.7-linux-armv7.tar.gz"
+        );
+    }
+
+    #[test]
+    fn test_gph_line_to_gopher() {
+        let req = Request::from("localhost", 70, ".").unwrap();
+
+        assert_eq!(
+            gph_line_to_gopher("regular line test", &req),
+            "iregular line test	(null)	localhost	70\r\n"
+        );
+        assert_eq!(
+            gph_line_to_gopher("1link test	/test	localhost	70", &req),
+            "1link test	/test	localhost	70\r\n"
+        );
+
+        let line = "0short link test	/test";
+        assert_eq!(
+            gph_line_to_gopher(line, &req),
+            "0short link test	/test	localhost	70\r\n"
         );
     }
 }
