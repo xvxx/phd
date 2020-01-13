@@ -151,6 +151,7 @@ Just unzip/untar the `phd` program into your $PATH and get going!
 
 ## resources
 
+- gopher://bitreich.org/1/scm/geomyidae/files.gph
 - https://github.com/gophernicus/gophernicus/blob/master/README.Gophermap
 - https://gopher.zone/posts/how-to-gophermap/
 - [rfc 1436](https://tools.ietf.org/html/rfc1436)

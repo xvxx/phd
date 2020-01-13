@@ -245,21 +245,45 @@ where
 
 /// Given a single line from a .gph file, convert it into a
 /// Gopher-format line. Supports a basic format where lines without \t
-/// get an `i` prefixed, and the Gophernicus format.
+/// get an `i` prefixed, and the geomyidae format.
 fn gph_line_to_gopher(line: &str, req: &Request) -> String {
     let mut line = line.trim_end_matches("\r").to_string();
-    match line.chars().filter(|&c| c == '\t').count() {
-        0 => {
-            // Insert `i` prefix to any prefix-less lines without tabs.
-            if line.chars().nth(0) != Some('i') {
-                line.insert(0, 'i');
-            }
-            line.push_str(&format!("\t(null)\t{}\t{}", req.host, req.port))
+    if line.starts_with('[') && line.ends_with(']') && line.contains('|') {
+        // [1|name|sel|server|port]
+        line = line
+            .replacen('|', "", 1)
+            .trim_start_matches('[')
+            .trim_end_matches(']')
+            .replace("\\|", "__P_ESC_PIPE")
+            .replace('|', "\t")
+            .replace("__P_ESC_PIPE", "\\|");
+        let tabs = line.matches('\t').count();
+        if tabs < 1 {
+            line.push('\t');
+            line.push_str("(null)");
         }
-        // Auto-add host and port to lines with just a selector.
-        1 => line.push_str(&format!("\t{}\t{}", req.host, req.port)),
-        2 => line.push_str(&format!("\t{}", req.port)),
-        _ => {}
+        if tabs < 2 {
+            line.push('\t');
+            line.push_str(&req.host);
+        }
+        if tabs < 3 {
+            line.push('\t');
+            line.push_str(req.port.to_string().as_ref());
+        }
+    } else {
+        match line.matches('\t').count() {
+            0 => {
+                // Insert `i` prefix to any prefix-less lines without tabs.
+                if line.chars().nth(0) != Some('i') {
+                    line.insert(0, 'i');
+                }
+                line.push_str(&format!("\t(null)\t{}\t{}", req.host, req.port))
+            }
+            // Auto-add host and port to lines with just a selector.
+            1 => line.push_str(&format!("\t{}\t{}", req.host, req.port)),
+            2 => line.push_str(&format!("\t{}", req.port)),
+            _ => {}
+        }
     }
     line.push_str("\r\n");
     line
@@ -411,6 +435,39 @@ mod tests {
         assert_eq!(
             gph_line_to_gopher(line, &req),
             "0short link test	/test	localhost	70\r\n"
+        );
+    }
+
+    #[test]
+    fn test_gph_geomyidae() {
+        let req = Request::from("localhost", 70, ".").unwrap();
+
+        assert_eq!(
+            gph_line_to_gopher("[1|phkt.io|/|phkt.io|70]", &req),
+            "1phkt.io	/	phkt.io	70\r\n"
+        );
+        assert_eq!(
+            gph_line_to_gopher("[1|R-36|/]", &req),
+            "1R-36	/	localhost	70\r\n"
+        );
+        assert_eq!(
+            gph_line_to_gopher("[1|R-36|/|server|port]", &req),
+            "1R-36	/	server	port\r\n"
+        );
+        assert_eq!(
+            gph_line_to_gopher("[0|file - comment|/file.dat|server|port]", &req),
+            "0file - comment	/file.dat	server	port\r\n"
+        );
+        assert_eq!(
+            gph_line_to_gopher(
+                "[0|some \\| escape and [ special characters ] test|error|server|port]",
+                &req
+            ),
+            "0some \\| escape and [ special characters ] test	error	server	port\r\n"
+        );
+        assert_eq!(
+            gph_line_to_gopher("[|empty type||server|port]", &req),
+            "empty type\t\tserver\tport\r\n",
         );
     }
 }
