@@ -27,10 +27,9 @@ uninstall: $(RELEASE)
 clean:
 	-rm -rf target
 
-# Build and strip the release version
+# Build the release version
 $(RELEASE): $(SOURCES)
 	cargo build --release
-	strip $@
 
 # Build the debug version
 $(DEBUG): $(SOURCES)
