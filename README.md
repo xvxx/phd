@@ -15,7 +15,7 @@
 Point it at a directory and it'll serve up all its text files,
 sub-directories, and binary files over gopher. Any `.gph` files will
 be served up as [gopermaps][map] and executable `.gph` files will be
-run as a script with their output served to the client, like the
+run as a program with their output served to the client, like the
 glorious cgi-bin days of yore!
 
 ### special files:
@@ -36,21 +36,28 @@ Any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't
 start with an `i` will get an `i` automatically prefixed, turning it
 into a gopher information item.
 
+Alternatively, phd supports [geomyidae][gmi] syntax:
+
+    This is an info line.
+    [1|This is a link|/help|server|port]
+    [h|URL Link|URL:https://noogle.com
+
+`server` and `port` will get translated into the server and port of
+the actively running server, eg `localhost` and `7070`.
+
 ### dynamic content:
 
 Any `.gph` file that is marked **executable** with be run as if it
-were a shell script and its output will be sent to the client. it will
-be passed three arguments: the query string (if any, the host, and the
-port. do with them what you will.
+were a standalone program and its output will be sent to the client.
+It will be passed three arguments: the query string (if any), the
+server's hostname, and the current port. Do with them what you will.
 
 For example:
 
-```sh
-$ cat echo.gph
-#!/bin/sh
-echo "Hi, world! You said:" $1
-echo "1Visit Gopherpedia	/	gopherpedia.com	70"
-```
+    $ cat echo.gph
+    #!/bin/sh
+    echo "Hi, world! You said:" $1
+    echo "1Visit Gopherpedia	/	gopherpedia.com	70"
 
 Then:
 
@@ -60,11 +67,9 @@ Then:
 
 Or more seriously:
 
-```sh
-$ cat figlet.gph
-#!/bin/sh
-figlet $1
-```
+    $ cat figlet.gph
+    #!/bin/sh
+    figlet $1
 
 then:
 
@@ -81,21 +86,19 @@ then:
 `sh` is fun, but for serious work you need a serious scripting
 language like Ruby or PHP or Node.JS:
 
-```ruby
-$ cat sizes.gph
-#!/usr/bin/env ruby
+    $ cat sizes.gph
+    #!/usr/bin/env ruby
 
-def filesize(file)
-    (size=File.size file) > (k=1024) ? "#{size/k}K" : "#{size}B"
-end
+    def filesize(file)
+        (size=File.size file) > (k=1024) ? "#{size/k}K" : "#{size}B"
+    end
 
-puts "~ file sizes ~"
-spaces = 20
-Dir[__dir__ + "/*"].each do |entry|
-    name = File.basename entry
-    puts "#{name}#{' ' * (spaces - name.length)}#{filesize entry}"
-end
-```
+    puts "~ file sizes ~"
+    spaces = 20
+    Dir[__dir__ + "/*"].each do |entry|
+        name = File.basename entry
+        puts "#{name}#{' ' * (spaces - name.length)}#{filesize entry}"
+    end
 
 Now you can finally share the file sizes of a directory with the world
 of Gopher! 
@@ -136,11 +139,11 @@ of Gopher!
 
 ## installation
 
-Binaries for linux, mac, and raspberry pi are available at 
+Binaries for Linux, Mac, and Raspberry Pi are available at 
 gopher://phkt.io/1/releases/phd and https://github.com/xvxx/phd/releases:
 
 - [phd-v0.1.6-linux-x86_64.tar.gz][0]
-- [phd-v0.1.6-linux-armv7.tar.gz (RPi)][1]
+- [phd-v0.1.6-linux-armv7.tar.gz (Raspberry Pi)][1]
 - [phd-v0.1.6-macos.zip][2]
 
 Just unzip/untar the `phd` program into your $PATH and get going!
@@ -169,3 +172,4 @@ Just unzip/untar the `phd` program into your $PATH and get going!
 [1]: https://github.com/xvxx/phd/releases/download/v0.1.6/phd-v0.1.6-linux-armv7.tar.gz
 [2]: https://github.com/xvxx/phd/releases/download/v0.1.6/phd-v0.1.6-macos.zip
 [map]: https://en.wikipedia.org/wiki/Gopher_(protocol)#Source_code_of_a_menu
+[gmi]: gopher://bitreich.org/1/scm/geomyidae
