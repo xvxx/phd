@@ -250,13 +250,16 @@ fn gph_line_to_gopher(line: &str, req: &Request) -> String {
     let mut line = line.trim_end_matches("\r").to_string();
     if line.starts_with('[') && line.ends_with(']') && line.contains('|') {
         // [1|name|sel|server|port]
+        let port = req.port.to_string();
         line = line
             .replacen('|', "", 1)
             .trim_start_matches('[')
             .trim_end_matches(']')
             .replace("\\|", "__P_ESC_PIPE")
             .replace('|', "\t")
-            .replace("__P_ESC_PIPE", "\\|");
+            .replace("__P_ESC_PIPE", "\\|")
+            .replace("\tserver\t", format!("\t{}\t", req.host).as_ref())
+            .replace("\tport", format!("\t{}", port).as_ref());
         let tabs = line.matches('\t').count();
         if tabs < 1 {
             line.push('\t');
@@ -268,7 +271,7 @@ fn gph_line_to_gopher(line: &str, req: &Request) -> String {
         }
         if tabs < 3 {
             line.push('\t');
-            line.push_str(req.port.to_string().as_ref());
+            line.push_str(&port);
         }
     } else {
         match line.matches('\t').count() {
@@ -452,22 +455,22 @@ mod tests {
         );
         assert_eq!(
             gph_line_to_gopher("[1|R-36|/|server|port]", &req),
-            "1R-36	/	server	port\r\n"
+            "1R-36	/	localhost	70\r\n"
         );
         assert_eq!(
             gph_line_to_gopher("[0|file - comment|/file.dat|server|port]", &req),
-            "0file - comment	/file.dat	server	port\r\n"
+            "0file - comment	/file.dat	localhost	70\r\n"
         );
         assert_eq!(
             gph_line_to_gopher(
                 "[0|some \\| escape and [ special characters ] test|error|server|port]",
                 &req
             ),
-            "0some \\| escape and [ special characters ] test	error	server	port\r\n"
+            "0some \\| escape and [ special characters ] test	error	localhost	70\r\n"
         );
         assert_eq!(
             gph_line_to_gopher("[|empty type||server|port]", &req),
-            "empty type\t\tserver\tport\r\n",
+            "empty type\t\tlocalhost\t70\r\n",
         );
     }
 }
