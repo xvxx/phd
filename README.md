@@ -142,9 +142,9 @@ of Gopher!
 Binaries for Linux, Mac, and Raspberry Pi are available at 
 gopher://phkt.io/1/releases/phd and https://github.com/xvxx/phd/releases:
 
-- [phd-v0.1.6-linux-x86_64.tar.gz][0]
-- [phd-v0.1.6-linux-armv7.tar.gz (Raspberry Pi)][1]
-- [phd-v0.1.6-macos.zip][2]
+- [phd-v0.1.7-linux-x86_64.tar.gz][0]
+- [phd-v0.1.7-linux-armv7.tar.gz (Raspberry Pi)][1]
+- [phd-v0.1.7-macos.zip][2]
 
 Just unzip/untar the `phd` program into your $PATH and get going!
 
@@ -168,8 +168,8 @@ Just unzip/untar the `phd` program into your $PATH and get going!
 - [ ] ipv6
 - [ ] user input sanitization tests
 
-[0]: https://github.com/xvxx/phd/releases/download/v0.1.6/phd-v0.1.6-linux-x86_64.tar.gz
-[1]: https://github.com/xvxx/phd/releases/download/v0.1.6/phd-v0.1.6-linux-armv7.tar.gz
-[2]: https://github.com/xvxx/phd/releases/download/v0.1.6/phd-v0.1.6-macos.zip
+[0]: https://github.com/xvxx/phd/releases/download/v0.1.7/phd-v0.1.7-linux-x86_64.tar.gz
+[1]: https://github.com/xvxx/phd/releases/download/v0.1.7/phd-v0.1.7-linux-armv7.tar.gz
+[2]: https://github.com/xvxx/phd/releases/download/v0.1.7/phd-v0.1.7-macos.zip
 [map]: https://en.wikipedia.org/wiki/Gopher_(protocol)#Source_code_of_a_menu
 [gmi]: gopher://bitreich.org/1/scm/geomyidae
