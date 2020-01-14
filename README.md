@@ -13,7 +13,7 @@
 `phd` is a small, easy-to-use gopher server.
 
 Point it at a directory and it'll serve up all its text files,
-sub-directories, and binary files over gopher. Any `.gph` files will
+sub-directories, and binary files over Gopher. Any `.gph` files will
 be served up as [gopermaps][map] and executable `.gph` files will be
 run as a program with their output served to the client, like the
 glorious cgi-bin days of yore!
@@ -40,7 +40,7 @@ Alternatively, phd supports [geomyidae][gmi] syntax:
 
     This is an info line.
     [1|This is a link|/help|server|port]
-    [h|URL Link|URL:https://noogle.com
+    [h|URL Link|URL:https://noogle.com]
 
 `server` and `port` will get translated into the server and port of
 the actively running server, eg `localhost` and `7070`.
