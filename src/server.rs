@@ -255,7 +255,7 @@ fn gph_line_to_gopher(line: &str, req: &Request) -> String {
             .replacen('|', "", 1)
             .trim_start_matches('[')
             .trim_end_matches(']')
-            .replace("\\|", "__P_ESC_PIPE")
+            .replace("\\|", "__P_ESC_PIPE") // cheap hack
             .replace('|', "\t")
             .replace("__P_ESC_PIPE", "\\|")
             .replace("\tserver\t", format!("\t{}\t", req.host).as_ref())
@@ -265,13 +265,16 @@ fn gph_line_to_gopher(line: &str, req: &Request) -> String {
             line.push('\t');
             line.push_str("(null)");
         }
+        // if a link is missing host + port, assume it's this server.
+        // if it's just missing the port, assume port 70
         if tabs < 2 {
             line.push('\t');
             line.push_str(&req.host);
-        }
-        if tabs < 3 {
             line.push('\t');
             line.push_str(&port);
+        } else if tabs < 3 {
+            line.push('\t');
+            line.push_str("70");
         }
     } else {
         match line.matches('\t').count() {
@@ -443,34 +446,38 @@ mod tests {
 
     #[test]
     fn test_gph_geomyidae() {
-        let req = Request::from("localhost", 70, ".").unwrap();
+        let req = Request::from("localhost", 7070, ".").unwrap();
 
         assert_eq!(
-            gph_line_to_gopher("[1|phkt.io|/|phkt.io|70]", &req),
+            gph_line_to_gopher("[1|phkt.io|/|phkt.io]", &req),
             "1phkt.io	/	phkt.io	70\r\n"
         );
         assert_eq!(
+            gph_line_to_gopher("[1|sdf6000|/not-real|sdf.org|6000]", &req),
+            "1sdf6000	/not-real	sdf.org	6000\r\n"
+        );
+        assert_eq!(
             gph_line_to_gopher("[1|R-36|/]", &req),
-            "1R-36	/	localhost	70\r\n"
+            "1R-36	/	localhost	7070\r\n"
         );
         assert_eq!(
             gph_line_to_gopher("[1|R-36|/|server|port]", &req),
-            "1R-36	/	localhost	70\r\n"
+            "1R-36	/	localhost	7070\r\n"
         );
         assert_eq!(
             gph_line_to_gopher("[0|file - comment|/file.dat|server|port]", &req),
-            "0file - comment	/file.dat	localhost	70\r\n"
+            "0file - comment	/file.dat	localhost	7070\r\n"
         );
         assert_eq!(
             gph_line_to_gopher(
                 "[0|some \\| escape and [ special characters ] test|error|server|port]",
                 &req
             ),
-            "0some \\| escape and [ special characters ] test	error	localhost	70\r\n"
+            "0some \\| escape and [ special characters ] test	error	localhost	7070\r\n"
         );
         assert_eq!(
             gph_line_to_gopher("[|empty type||server|port]", &req),
-            "empty type\t\tlocalhost\t70\r\n",
+            "empty type\t\tlocalhost\t7070\r\n",
         );
     }
 }
