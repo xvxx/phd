@@ -1,3 +1,5 @@
+//! A simple multi-threaded Gopher server.
+
 use crate::{color, Request, Result};
 use gophermap::{GopherMenu, ItemType};
 use std::{

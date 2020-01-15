@@ -1,7 +1,15 @@
+//! Cheesy way to easily wrap text in console colors.
+//! Example:
+//! ```
+//! use phd::color;
+//! println!("{}Error: {}{}", color::Red, "Something broke.", color::Reset);
+//! ```
+
 use std::fmt;
 
 macro_rules! color {
     ($t:ident, $code:expr) => {
+        #[allow(missing_docs)]
         pub struct $t;
         impl fmt::Display for $t {
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

@@ -1,13 +1,23 @@
+//! A Request represents a Gopher request made by a client. phd can
+//! serve directory listings as Gopher Menus, plain text files as
+//! Text, binary files as downloads, Gophermap files as menus, or
+//! executable files as dynamic content.
+
 use crate::Result;
 use std::fs;
 
 /// This struct represents a single gopher request.
 #[derive(Debug, Clone)]
 pub struct Request {
+    /// Gopher selector requested
     pub selector: String,
+    /// Search query string, if any.
     pub query: String,
+    /// Root directory of the server. Can't serve outside of this.
     pub root: String,
+    /// Host of the currently running server.
     pub host: String,
+    /// Port of the currently running server.
     pub port: u16,
 }
 
