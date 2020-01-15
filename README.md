@@ -79,7 +79,7 @@ then:
     [INFO] | '_ \| |  / _` |/ _ \| '_ \| '_ \ / _ \ '__|
     [INFO] | | | | | | (_| | (_) | |_) | | | |  __/ |
     [INFO] |_| |_|_|  \__, |\___/| .__/|_| |_|\___|_|
-    [INFO]             |___/      |_|
+    [INFO]            |___/      |_|
 
 ### ruby on rails:
 
@@ -138,6 +138,10 @@ of Gopher!
                             # using hostname "gopher.com"
 
 ## installation
+
+On macOS you can install with [Homebrew](https://brew.sh/):
+
+    brew install xvxx/code/phd
 
 Binaries for Linux, Mac, and Raspberry Pi are available at 
 gopher://phkt.io/1/releases/phd and https://github.com/xvxx/phd/releases:
