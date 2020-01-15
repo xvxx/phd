@@ -247,6 +247,10 @@ where
 /// Gopher-format line. Supports a basic format where lines without \t
 /// get an `i` prefixed, and the geomyidae format.
 fn gph_line_to_gopher(line: &str, req: &Request) -> String {
+    if line.starts_with('#') {
+        return "".to_string();
+    }
+
     let mut line = line.trim_end_matches("\r").to_string();
     if line.starts_with('[') && line.ends_with(']') && line.contains('|') {
         // [1|name|sel|server|port]
@@ -452,6 +456,7 @@ mod tests {
             gph_line_to_gopher("[1|phkt.io|/|phkt.io]", &req),
             "1phkt.io	/	phkt.io	70\r\n"
         );
+        assert_eq!(gph_line_to_gopher("#[1|phkt.io|/|phkt.io]", &req), "");
         assert_eq!(
             gph_line_to_gopher("[1|sdf6000|/not-real|sdf.org|6000]", &req),
             "1sdf6000	/not-real	sdf.org	6000\r\n"
