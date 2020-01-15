@@ -167,7 +167,7 @@ where
         )?;
     }
 
-    let mut footer = path.clone();
+    let mut footer = path;
     footer.push_str("/footer.gph");
     if fs_exists(&footer) {
         let mut sel = req.selector.clone();
@@ -251,7 +251,7 @@ fn gph_line_to_gopher(line: &str, req: &Request) -> String {
         return "".to_string();
     }
 
-    let mut line = line.trim_end_matches("\r").to_string();
+    let mut line = line.trim_end_matches('\r').to_string();
     if line.starts_with('[') && line.ends_with(']') && line.contains('|') {
         // [1|name|sel|server|port]
         let port = req.port.to_string();

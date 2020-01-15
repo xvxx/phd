@@ -16,7 +16,7 @@ impl Request {
     pub fn from(host: &str, port: u16, root: &str) -> Result<Request> {
         Ok(Request {
             host: host.into(),
-            port: port,
+            port,
             root: fs::canonicalize(root)?.to_string_lossy().into(),
             selector: String::new(),
             query: String::new(),
@@ -43,7 +43,7 @@ impl Request {
         self.query.clear();
         self.selector.clear();
         if let Some(i) = line.find('\t') {
-            if line.len() >= i + 1 {
+            if line.len() > i {
                 self.query.push_str(&line[i + 1..]);
                 self.selector.push_str(&line[..i]);
                 return;
