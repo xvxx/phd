@@ -47,7 +47,7 @@ dependencies = [
 
 [[package]]
 name = "phd"
-version = "0.1.8"
+version = "0.1.9-dev"
 dependencies = [
  "alphanumeric-sort 1.0.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "content_inspector 0.2.4 (registry+https://github.com/rust-lang/crates.io-index)",
