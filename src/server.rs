@@ -158,7 +158,9 @@ where
             continue;
         }
         let mut path = rel_path.clone();
-        path.push('/');
+        if path != "/" {
+            path.push('/');
+        }
         path.push_str(&file_name.to_string_lossy());
         menu.write_entry(
             file_type(&entry),
