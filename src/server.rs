@@ -32,7 +32,7 @@ pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
     let pool = ThreadPool::new(MAX_WORKERS);
 
     println!(
-        "{}┬ Listening {}on {}{}{} at {}{}{}",
+        "{}» Listening {}on {}{}{} at {}{}{}",
         color::Yellow,
         color::Reset,
         color::Yellow,
