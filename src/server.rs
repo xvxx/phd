@@ -287,10 +287,8 @@ fn gph_line_to_gopher(line: &str, req: &Request) -> String {
     } else {
         match line.matches('\t').count() {
             0 => {
-                // Insert `i` prefix to any prefix-less lines without tabs.
-                if line.chars().nth(0) != Some('i') {
-                    line.insert(0, 'i');
-                }
+                // Always insert `i` prefix to any lines without tabs.
+                line.insert(0, 'i');
                 line.push_str(&format!("\t(null)\t{}\t{}", req.host, req.port))
             }
             // Auto-add host and port to lines with just a selector.
