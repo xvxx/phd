@@ -31,15 +31,15 @@ glorious cgi-bin days of yore!
 
 ### ~ special files ~
 
-- **header.gph**: If it exists in a directory, its content will be
+- **`header.gph`**: If it exists in a directory, its content will be
   shown above the directory's content. Put ASCII art in it.
-- **footer.gph**: Same, but will be shown below a directory's content.
-- **index.gph**: Completely replaces a directory's content with what's
+- **`footer.gph`**: Same, but will be shown below a directory's content.
+- **`index.gph`**: Completely replaces a directory's content with what's
   in this file.
-- **??.gph**: Visiting `gopher://yoursite/1/dog/` will try to render
+- **`??.gph`**: Visiting `gopher://yoursite/1/dog/` will try to render
   `dog.gph` from disk. Visiting `/1/dog.gph` will render the raw
   content of the .gph file.
-- **.reverse**: If this exists, the directory contents will be listed
+- **`.reverse`**: If this exists, the directory contents will be listed
   in reverse alphanumeric order. Useful for phloggin', if you date
   your posts.
 
