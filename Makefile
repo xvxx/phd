@@ -34,3 +34,15 @@ $(RELEASE): $(SOURCES)
 # Build the debug version
 $(DEBUG): $(SOURCES)
 	cargo build
+
+# Build manual
+.PHONY: manual
+manual: doc/phd.1
+
+doc/phd.1: doc/phd.1.md scdoc
+	scdoc < doc/phd.1.md > doc/phd.1
+
+# Must have scdoc installed to build manual.
+scdoc:
+	@which scdoc || (echo "scdoc(1) not found."; \
+		echo "please install to build the manual: https://repology.org/project/scdoc"; exit 1)

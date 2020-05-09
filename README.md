@@ -25,7 +25,7 @@
 
 Point it at a directory and it'll serve up all the text files,
 sub-directories, and binary files over Gopher. Any `.gph` files will
-be served up as [gopermaps][map] and executable `.gph` files will be
+be served up as [gophermaps][map] and executable `.gph` files will be
 run as a program with their output served to the client, like the
 glorious cgi-bin days of yore!
 
