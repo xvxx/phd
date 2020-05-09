@@ -1,7 +1,6 @@
 //! A simple multi-threaded Gopher server.
 
-use crate::{color, Request, Result};
-use gophermap::ItemType;
+use crate::{color, gopher, Request, Result};
 use std::{
     cmp::Ordering,
     fs::{self, DirEntry},
@@ -326,9 +325,9 @@ where
 }
 
 /// Determine the gopher type for a DirEntry on disk.
-fn file_type(dir: &fs::DirEntry) -> ItemType {
+fn file_type(dir: &fs::DirEntry) -> gopher::Type {
     let metadata = match dir.metadata() {
-        Err(_) => return ItemType::Error,
+        Err(_) => return gopher::Type::Error,
         Ok(md) => md,
     };
 
@@ -337,17 +336,17 @@ fn file_type(dir: &fs::DirEntry) -> ItemType {
             let mut buffer: Vec<u8> = vec![];
             let _ = file.take(MAX_PEEK_SIZE as u64).read_to_end(&mut buffer);
             if content_inspector::inspect(&buffer).is_binary() {
-                ItemType::Binary
+                gopher::Type::Binary
             } else {
-                ItemType::File
+                gopher::Type::Text
             }
         } else {
-            ItemType::Error
+            gopher::Type::Error
         }
     } else if metadata.is_dir() {
-        ItemType::Directory
+        gopher::Type::Menu
     } else {
-        ItemType::Error
+        gopher::Type::Error
     }
 }
 

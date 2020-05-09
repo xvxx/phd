@@ -11,6 +11,7 @@
 #![allow(clippy::while_let_on_iterator)]
 
 pub mod color;
+pub mod gopher;
 pub mod request;
 pub mod server;
 
