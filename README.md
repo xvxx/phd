@@ -14,7 +14,7 @@
 <a href="https://crates.io/crates/phd">
 <img src="https://img.shields.io/crates/v/phd">
 </a>
-<a href="https://git.io/JvR5g">
+<a href="https://github.com/xvxx/phd/actions?query=workflow%3Abuild">
 <img src="https://github.com/xvxx/phd/workflows/build/badge.svg">
 </a>
 
