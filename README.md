@@ -17,8 +17,9 @@
 <a href="https://github.com/xvxx/phd/actions?query=workflow%3Abuild">
 <img src="https://github.com/xvxx/phd/workflows/build/badge.svg">
 </a>
-
 </p>
+
+---
 
 `phd` is a small, easy-to-use gopher server.
 
