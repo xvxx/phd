@@ -148,8 +148,7 @@ where
     let rel_path = req.relative_file_path();
 
     // show directory entries
-    let mut reverse = path.to_string();
-    reverse.push_str("/.reverse");
+    let reverse = format!("{}/.reverse", path);
     let paths = sort_paths(&path, fs_exists(&reverse))?;
     for entry in paths {
         let file_name = entry.file_name();
@@ -157,11 +156,11 @@ where
         if f.chars().nth(0) == Some('.') || IGNORED_FILES.contains(&f.as_ref()) {
             continue;
         }
-        let mut path = rel_path.clone();
-        if path != "/" {
-            path.push('/');
-        }
-        path.push_str(&file_name.to_string_lossy());
+        let path = format!(
+            "{}/{}",
+            rel_path.trim_end_matches('/'),
+            file_name.to_string_lossy()
+        );
         menu.write_entry(
             file_type(&entry),
             &file_name.to_string_lossy(),
@@ -171,11 +170,9 @@ where
         )?;
     }
 
-    let mut footer = path;
-    footer.push_str("/footer.gph");
+    let footer = format!("{}/footer.gph", path.trim_end_matches('/'));
     if fs_exists(&footer) {
-        let mut sel = req.selector.clone();
-        sel.push_str("/footer.gph");
+        let sel = format!("{}/footer.gph", req.selector);
         write_gophermap(
             w,
             Request {
