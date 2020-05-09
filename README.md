@@ -4,10 +4,20 @@
 |   )|   )|   )
 |__/ |  / |__/
 |
---> <p align="center"> <img src="./img/logo.png"> <br> 
+-->
+<p align="center">
+<img src="./img/logo.png"> <br>
+
 <a href="https://github.com/xvxx/phd/releases">
 <img src="https://img.shields.io/github/v/release/xvxx/phd?include_prereleases">
 </a>
+<a href="https://crates.io/crates/phd">
+<img src="https://img.shields.io/crates/v/phd">
+</a>
+<a href="https://git.io/JvR5g">
+<img src="https://github.com/xvxx/phd/workflows/build/badge.svg">
+</a>
+
 </p>
 
 `phd` is a small, easy-to-use gopher server.
@@ -101,7 +111,7 @@ language like Ruby or PHP or Node.JS:
     end
 
 Now you can finally share the file sizes of a directory with the world
-of Gopher! 
+of Gopher!
 
     $ phetch -r 0.0.0.0:7070/1/sizes
     i~ file sizes ~	(null)	127.0.0.1	7070
@@ -143,14 +153,14 @@ On macOS you can install with [Homebrew](https://brew.sh/):
 
     brew install xvxx/code/phd
 
-Binaries for Linux, Mac, and Raspberry Pi are available at 
+Binaries for Linux, Mac, and Raspberry Pi are available at
 gopher://phkt.io/1/releases/phd and https://github.com/xvxx/phd/releases:
 
 - [phd-v0.1.9-linux-x86_64.tar.gz][0]
 - [phd-v0.1.9-linux-armv7.tar.gz (Raspberry Pi)][1]
 - [phd-v0.1.9-macos.zip][2]
 
-Just unzip/untar the `phd` program into your $PATH and get going!
+Just unzip/untar the `phd` program into your \$PATH and get going!
 
 ## development
 
