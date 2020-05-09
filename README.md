@@ -23,31 +23,31 @@
 
 `phd` is a small, easy-to-use gopher server.
 
-Point it at a directory and it'll serve up all its text files,
+Point it at a directory and it'll serve up all the text files,
 sub-directories, and binary files over Gopher. Any `.gph` files will
 be served up as [gopermaps][map] and executable `.gph` files will be
 run as a program with their output served to the client, like the
 glorious cgi-bin days of yore!
 
-### special files:
+### ~ special files ~
 
 - **header.gph**: If it exists in a directory, its content will be
   shown above the directory's content. Put ASCII art in it.
 - **footer.gph**: Same, but will be shown below a directory's content.
 - **index.gph**: Completely replaces a directory's content with what's
   in this file.
-- **??.gph**: Visiting gopher://yoursite/1/dog/ will try to render
-  `dog.gph` from disk. Visiting /1/dog.gph will render the raw content
-  of the .gph file.
+- **??.gph**: Visiting `gopher://yoursite/1/dog/` will try to render
+  `dog.gph` from disk. Visiting `/1/dog.gph` will render the raw
+  content of the .gph file.
 - **.reverse**: If this exists, the directory contents will be listed
   in reverse alphanumeric order. Useful for phloggin', if you date
   your posts.
 
-Any line in a `.gph` file that doesn't contain tabs (`\t`) and doesn't
-start with an `i` will get an `i` automatically prefixed, turning it
-into a gopher information item.
+Any line in a `.gph` file that doesn't contain tabs (`\t`) will get an
+`i` automatically prefixed, turning it into a Gopher information item.
 
-Alternatively, phd supports [geomyidae][gmi] syntax:
+For your convenience, phd supports **[geomyidae][gmi]** syntax for
+creating links:
 
     This is an info line.
     [1|This is a link|/help|server|port]
@@ -56,7 +56,10 @@ Alternatively, phd supports [geomyidae][gmi] syntax:
 `server` and `port` will get translated into the server and port of
 the actively running server, eg `localhost` and `7070`.
 
-### dynamic content:
+Any line containing a tab character (`\t`) will be sent as-is to the
+client, meaning you can write and serve up raw Gophermap files too.
+
+### ~ dynamic content ~
 
 Any `.gph` file that is marked **executable** with be run as if it
 were a standalone program and its output will be sent to the client.
@@ -92,7 +95,7 @@ then:
     [INFO] |_| |_|_|  \__, |\___/| .__/|_| |_|\___|_|
     [INFO]            |___/      |_|
 
-### ruby on rails:
+### ~ ruby on rails ~
 
 `sh` is fun, but for serious work you need a serious scripting
 language like Ruby or PHP or Node.JS:
@@ -127,14 +130,17 @@ of Gopher!
     isizes.gph           276B	(null)	127.0.0.1	7070
     isrc                 224B	(null)	127.0.0.1	7070
 
-## usage
+## ~ usage ~
+
+    Usage:
 
         phd [options] <root directory>
 
     Options:
 
-        -p, --port      Port to bind to.
-        -h, --host      Hostname to use when generating links.
+        -r, --render SELECTOR  Render and print SELECTOR to stdout only.
+        -p, --port             Port to bind to. [Default: {port}]
+        -h, --host             Hostname for links. [Default: {host}]
 
     Other flags:
 
@@ -146,9 +152,10 @@ of Gopher!
         phd ./path/to/site  # Serve directory over port 7070.
         phd -p 70 docs      # Serve 'docs' directory on port 70
         phd -h gopher.com   # Serve current directory over port 7070
-                            # using hostname "gopher.com"
+                            # using hostname 'gopher.com'
+        phd -r / ./site     # Render local gopher site to stdout.
 
-## installation
+## ~ installation ~
 
 On macOS you can install with [Homebrew](https://brew.sh/):
 
@@ -161,22 +168,25 @@ gopher://phkt.io/1/releases/phd and https://github.com/xvxx/phd/releases:
 - [phd-v0.1.9-linux-armv7.tar.gz (Raspberry Pi)][1]
 - [phd-v0.1.9-macos.zip][2]
 
-Just unzip/untar the `phd` program into your \$PATH and get going!
+Just unzip/untar the `phd` program into your `$PATH` and get going!
 
-## development
+If you have **[cargo][rustup]**, you can install the crate directly:
+
+    cargo install phd
+
+## ~ development ~
 
     cargo run -- ./path/to/gopher/site
 
-## resources
+## ~ resources ~
 
 - gopher://bitreich.org/1/scm/geomyidae/files.gph
 - https://github.com/gophernicus/gophernicus/blob/master/README.Gophermap
 - https://gopher.zone/posts/how-to-gophermap/
 - [rfc 1436](https://tools.ietf.org/html/rfc1436)
 
-## todo
+## ~ todo ~
 
-- [ ] script/serverless mode
 - [ ] systemd config, or something
 - [ ] TLS support
 - [ ] man page
@@ -187,4 +197,5 @@ Just unzip/untar the `phd` program into your \$PATH and get going!
 [1]: https://github.com/xvxx/phd/releases/download/v0.1.9/phd-v0.1.9-linux-armv7.tar.gz
 [2]: https://github.com/xvxx/phd/releases/download/v0.1.9/phd-v0.1.9-macos.zip
 [map]: https://en.wikipedia.org/wiki/Gopher_(protocol)#Source_code_of_a_menu
-[gmi]: gopher://bitreich.org/1/scm/geomyidae
+[gmi]: http://r-36.net/scm/geomyidae/
+[rustup]: https://rustup.rs

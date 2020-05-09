@@ -1,7 +1,7 @@
 //! A simple multi-threaded Gopher server.
 
 use crate::{color, Request, Result};
-use gophermap::{GopherMenu, ItemType};
+use gophermap::ItemType;
 use std::{
     cmp::Ordering,
     fs::{self, DirEntry},
@@ -62,7 +62,7 @@ pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
 }
 
 /// Reads from the client and responds.
-fn accept(stream: TcpStream, mut req: Request) -> Result<()> {
+fn accept(mut stream: TcpStream, mut req: Request) -> Result<()> {
     let reader = BufReader::new(&stream);
     let mut lines = reader.lines();
     if let Some(Ok(line)) = lines.next() {
@@ -75,15 +75,24 @@ fn accept(stream: TcpStream, mut req: Request) -> Result<()> {
             color::Reset
         );
         req.parse_request(&line);
-        write_response(&stream, req)?;
+        write_response(&mut stream, req)?;
     }
     Ok(())
 }
 
+/// Render a response to a String.
+pub fn render(host: &str, port: u16, root: &str, selector: &str) -> Result<String> {
+    let mut req = Request::from(host, port, root)?;
+    req.parse_request(&selector);
+    let mut out = vec![];
+    write_response(&mut out, req)?;
+    Ok(String::from_utf8_lossy(&out).into())
+}
+
 /// Writes a response to a client based on a Request.
-fn write_response<'a, W>(w: &'a W, mut req: Request) -> Result<()>
+fn write_response<W>(w: &mut W, mut req: Request) -> Result<()>
 where
-    &'a W: Write,
+    W: Write,
 {
     let path = req.file_path();
 
@@ -121,9 +130,9 @@ where
 }
 
 /// Send a directory listing (menu) to the client based on a Request.
-fn write_dir<'a, W>(w: &'a W, req: Request) -> Result<()>
+fn write_dir<W>(w: &mut W, req: Request) -> Result<()>
 where
-    &'a W: Write,
+    W: Write,
 {
     let path = req.file_path();
     if !fs_exists(&path) {
@@ -144,7 +153,6 @@ where
         )?;
     }
 
-    let mut menu = GopherMenu::with_write(w);
     let rel_path = req.relative_file_path();
 
     // show directory entries
@@ -161,8 +169,10 @@ where
             rel_path.trim_end_matches('/'),
             file_name.to_string_lossy()
         );
-        menu.write_entry(
-            file_type(&entry),
+        write!(
+            w,
+            "{}{}\t{}\t{}\t{}\r\n",
+            file_type(&entry).to_char(),
             &file_name.to_string_lossy(),
             &path,
             &req.host,
@@ -182,7 +192,8 @@ where
         )?;
     }
 
-    menu.end()?;
+    write!(w, ".\r\n");
+
     println!(
         "{}│{} Server reply:\t{}DIR {}{}{}",
         color::Green,
@@ -196,13 +207,13 @@ where
 }
 
 /// Send a file to the client based on a Request.
-fn write_file<'a, W>(mut w: &'a W, req: Request) -> Result<()>
+fn write_file<W>(w: &mut W, req: Request) -> Result<()>
 where
-    &'a W: Write,
+    W: Write,
 {
     let path = req.file_path();
     let mut f = fs::File::open(&path)?;
-    io::copy(&mut f, &mut w)?;
+    io::copy(&mut f, w)?;
     println!(
         "{}│{} Server reply:\t{}FILE {}{}{}",
         color::Green,
@@ -216,9 +227,9 @@ where
 }
 
 /// Send a gophermap (menu) to the client based on a Request.
-fn write_gophermap<'a, W>(mut w: &'a W, req: Request) -> Result<()>
+fn write_gophermap<W>(w: &mut W, req: Request) -> Result<()>
 where
-    &'a W: Write,
+    W: Write,
 {
     let path = req.file_path();
 
@@ -230,7 +241,7 @@ where
     };
 
     for line in reader.lines() {
-        w.write_all(gph_line_to_gopher(line, &req).as_bytes())?;
+        write!(w, "{}", gph_line_to_gopher(line, &req))?;
     }
     println!(
         "{}│{} Server reply:\t{}MAP {}{}{}",
@@ -298,9 +309,9 @@ fn gph_line_to_gopher(line: &str, req: &Request) -> String {
     line
 }
 
-fn write_not_found<'a, W>(mut w: &'a W, req: Request) -> Result<()>
+fn write_not_found<W>(w: &mut W, req: Request) -> Result<()>
 where
-    &'a W: Write,
+    W: Write,
 {
     let line = format!("3Not Found: {}\t/\tnone\t70\r\n", req.selector);
     println!(
@@ -310,7 +321,7 @@ where
         req.relative_file_path(),
         color::Reset,
     );
-    w.write_all(line.as_bytes())?;
+    write!(w, "{}", line)?;
     Ok(())
 }
 
