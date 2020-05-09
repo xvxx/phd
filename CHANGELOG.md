@@ -1,3 +1,16 @@
+## v0.1.11
+
+`phd` now ships with a basic manual!
+
+It will be installed via homebrew and (eventually) AUR.
+
+For now you can view it by cloning the repository and running:
+
+    man ./doc/phd.1
+
+Enjoy!
+
+
 ## v0.1.10
 
 `phd` can now render a single page to stdout, instead of starting
