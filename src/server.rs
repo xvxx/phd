@@ -23,6 +23,32 @@ const MAX_PEEK_SIZE: usize = 1024;
 /// Files not displayed in directory listings.
 const IGNORED_FILES: [&str; 3] = ["header.gph", "footer.gph", ".reverse"];
 
+use std::sync::atomic::{AtomicBool, Ordering as AtomicOrdering};
+
+/// Whether to print info!() messages to stdout.
+/// Defaults to true.
+static SHOW_INFO: AtomicBool = AtomicBool::new(true);
+
+/// Hide info! messages.
+fn hide_info() {
+    SHOW_INFO.swap(false, AtomicOrdering::Relaxed);
+}
+
+/// Print status message to the server's stdout.
+macro_rules! info {
+    ($e:expr) => {
+        if SHOW_INFO.load(AtomicOrdering::Relaxed) {
+            println!("{}", $e);
+        }
+    };
+    ($fmt:expr, $($args:expr),*) => {
+        info!(format!($fmt, $($args),*));
+    };
+    ($fmt:expr, $($args:expr,)*) => {
+        info!(format!($fmt, $($args,)*));
+    };
+}
+
 /// Starts a Gopher server at the specified host, port, and root directory.
 pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
     let addr = format!("{}:{}", "0.0.0.0", port);
@@ -30,7 +56,7 @@ pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
     let full_root_path = fs::canonicalize(&root)?.to_string_lossy().to_string();
     let pool = ThreadPool::new(MAX_WORKERS);
 
-    println!(
+    info!(
         "{}» Listening {}on {}{}{} at {}{}{}",
         color::Yellow,
         color::Reset,
@@ -43,7 +69,7 @@ pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
     );
     for stream in listener.incoming() {
         let stream = stream?;
-        println!(
+        info!(
             "{}┌ Connection{} from {}{}",
             color::Green,
             color::Reset,
@@ -53,7 +79,7 @@ pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
         let req = Request::from(host, port, root)?;
         pool.execute(move || {
             if let Err(e) = accept(stream, req) {
-                eprintln!("{}└ {}{}", color::Red, e, color::Reset);
+                info!("{}└ {}{}", color::Red, e, color::Reset);
             }
         });
     }
@@ -65,7 +91,7 @@ fn accept(mut stream: TcpStream, mut req: Request) -> Result<()> {
     let reader = BufReader::new(&stream);
     let mut lines = reader.lines();
     if let Some(Ok(line)) = lines.next() {
-        println!(
+        info!(
             "{}│{} Client sent:\t{}{:?}{}",
             color::Green,
             color::Reset,
@@ -81,6 +107,7 @@ fn accept(mut stream: TcpStream, mut req: Request) -> Result<()> {
 
 /// Render a response to a String.
 pub fn render(host: &str, port: u16, root: &str, selector: &str) -> Result<String> {
+    hide_info();
     let mut req = Request::from(host, port, root)?;
     req.parse_request(&selector);
     let mut out = vec![];
@@ -193,7 +220,7 @@ where
 
     write!(w, ".\r\n");
 
-    println!(
+    info!(
         "{}│{} Server reply:\t{}DIR {}{}{}",
         color::Green,
         color::Reset,
@@ -213,7 +240,7 @@ where
     let path = req.file_path();
     let mut f = fs::File::open(&path)?;
     io::copy(&mut f, w)?;
-    println!(
+    info!(
         "{}│{} Server reply:\t{}FILE {}{}{}",
         color::Green,
         color::Reset,
@@ -242,7 +269,7 @@ where
     for line in reader.lines() {
         write!(w, "{}", gph_line_to_gopher(line, &req))?;
     }
-    println!(
+    info!(
         "{}│{} Server reply:\t{}MAP {}{}{}",
         color::Green,
         color::Reset,
@@ -313,7 +340,7 @@ where
     W: Write,
 {
     let line = format!("3Not Found: {}\t/\tnone\t70\r\n", req.selector);
-    println!(
+    info!(
         "{}│ Not found: {}{}{}",
         color::Red,
         color::Cyan,

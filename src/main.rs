@@ -58,7 +58,7 @@ fn main() {
 
     if !render.is_empty() {
         return match phd::server::render(host, port, root, &render) {
-            Ok(out) => println!("{}", out),
+            Ok(out) => print!("{}", out),
             Err(e) => eprintln!("{}", e),
         };
     }
