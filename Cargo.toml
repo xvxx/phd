@@ -1,6 +1,6 @@
 [package]
 name = "phd"
-version = "0.1.12-dev"
+version = "0.1.12"
 authors = ["chris west <c@xvxx.io>"]
 license = "MIT"
 edition = "2018"
