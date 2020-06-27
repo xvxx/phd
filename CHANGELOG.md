@@ -1,3 +1,13 @@
+## v0.1.12-dev
+
+`phd` now uses `-b` and `--bind` to set the host and port to
+bind to. `-p` and `-h` are now strictly for URL generation.
+
+This should hopefully make it easier to run `phd` behind a
+proxy and still generate proper links.
+
+Thanks to @bradfier for the patch!
+
 ## v0.1.11
 
 `phd` now ships with a basic manual!
