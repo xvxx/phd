@@ -139,8 +139,9 @@ of Gopher!
     Options:
 
         -r, --render SELECTOR  Render and print SELECTOR to stdout only.
-        -p, --port             Port to bind to. [Default: {port}]
-        -h, --host             Hostname for links. [Default: {host}]
+        -h, --host HOST        Hostname for links. [Default: {host}]
+        -p, --port PORT        Port for links. [Default: {port}]
+        -b, --bind ADDRESS     Socket address to bind to. [Default: {bind}]
 
     Other flags:
 
@@ -189,8 +190,6 @@ If you have **[cargo][rustup]**, you can install the crate directly:
 
 - [ ] systemd config, or something
 - [ ] TLS support
-- [ ] man page
-- [ ] ipv6
 - [ ] user input sanitization tests
 
 [0]: https://github.com/xvxx/phd/releases/download/v0.1.11/phd-v0.1.11-linux-x86_64.tar.gz
