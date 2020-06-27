@@ -1,6 +1,6 @@
 use phd;
-use std::process;
 use std::net::SocketAddr;
+use std::process;
 
 const DEFAULT_BIND: &str = "[::]:7070";
 const DEFAULT_HOST: &str = "127.0.0.1";
@@ -91,8 +91,9 @@ fn print_help() {
 Options:
 
     -r, --render SELECTOR  Render and print SELECTOR to stdout only.
-    -p, --port             Port to bind to. [Default: {port}]
-    -h, --host             Hostname for links. [Default: {host}]
+    -p, --port PORT        Port to bind to. [Default: {port}]
+    -h, --host HOST        Hostname for links. [Default: {host}]
+    -b, --bind ADDRESS     Socket address to bind to. [Default: {bind}]
 
 Other flags:
 
@@ -109,6 +110,7 @@ Examples:
 ",
         host = DEFAULT_HOST,
         port = DEFAULT_PORT,
+        bind = DEFAULT_BIND,
     );
 }
 
