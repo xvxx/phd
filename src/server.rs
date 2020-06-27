@@ -5,7 +5,7 @@ use std::{
     cmp::Ordering,
     fs::{self, DirEntry},
     io::{self, prelude::*, BufReader, Read, Write},
-    net::{TcpListener, TcpStream},
+    net::{SocketAddr, TcpListener, TcpStream},
     os::unix::fs::PermissionsExt,
     path::Path,
     process::Command,
@@ -50,9 +50,8 @@ macro_rules! info {
 }
 
 /// Starts a Gopher server at the specified host, port, and root directory.
-pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
-    let addr = format!("{}:{}", "0.0.0.0", port);
-    let listener = TcpListener::bind(&addr)?;
+pub fn start(bind: SocketAddr, host: &str, port: u16, root: &str) -> Result<()> {
+    let listener = TcpListener::bind(&bind)?;
     let full_root_path = fs::canonicalize(&root)?.to_string_lossy().to_string();
     let pool = ThreadPool::new(MAX_WORKERS);
 
@@ -61,7 +60,7 @@ pub fn start(host: &str, port: u16, root: &str) -> Result<()> {
         color::Yellow,
         color::Reset,
         color::Yellow,
-        addr,
+        bind,
         color::Reset,
         color::Blue,
         full_root_path,

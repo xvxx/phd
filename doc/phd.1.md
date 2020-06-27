@@ -31,6 +31,9 @@ of your Gopher site.
 
 	Rather than start as a server, render the _SELECTOR_ of the site using the options provided and print the raw response to *STDOUT*.
 
+*-b* _ADDRESS_, *--bind* _ADDRESS_
+	Set the socket address to bind to, e.g. *127.0.0.1:7070*
+
 *-p* _PORT_, *--port* _PORT_
 	Set the _PORT_ to use when generating Gopher links.
 

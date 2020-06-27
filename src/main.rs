@@ -1,6 +1,8 @@
 use phd;
 use std::process;
+use std::net::SocketAddr;
 
+const DEFAULT_BIND: &str = "[::]:7070";
 const DEFAULT_HOST: &str = "127.0.0.1";
 const DEFAULT_PORT: u16 = 7070;
 
@@ -8,6 +10,7 @@ fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     let mut args = args.iter();
     let mut root = ".";
+    let mut bind: SocketAddr = DEFAULT_BIND.parse().unwrap();
     let mut host = DEFAULT_HOST;
     let mut port = DEFAULT_PORT;
     let mut render = "";
@@ -20,6 +23,17 @@ fn main() {
                     render = path;
                 } else {
                     render = "/";
+                }
+            }
+            "--bind" | "-b" | "-bind" => {
+                if let Some(b) = args.next() {
+                    bind = b
+                        .parse()
+                        .map_err(|_| {
+                            eprintln!("bad socket bind: {}", b);
+                            process::exit(1)
+                        })
+                        .unwrap();
                 }
             }
             "--port" | "-p" | "-port" => {
@@ -63,7 +77,7 @@ fn main() {
         };
     }
 
-    if let Err(e) = phd::server::start(host, port, root) {
+    if let Err(e) = phd::server::start(bind, host, port, root) {
         eprintln!("{}", e);
     }
 }
