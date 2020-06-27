@@ -91,8 +91,8 @@ fn print_help() {
 Options:
 
     -r, --render SELECTOR  Render and print SELECTOR to stdout only.
-    -p, --port PORT        Port to bind to. [Default: {port}]
     -h, --host HOST        Hostname for links. [Default: {host}]
+    -p, --port PORT        Port for links. [Default: {port}]
     -b, --bind ADDRESS     Socket address to bind to. [Default: {bind}]
 
 Other flags:
