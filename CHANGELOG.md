@@ -1,4 +1,12 @@
-## v0.1.12-dev
+## v0.1.13-dev
+
+
+- Added `--no-color` command line option to not display color when
+  logging.
+- Slight change to binding behavior: if `-p` is passed without `-b`,
+   we'll try to bind to that port. To this easier: `phd -p 7777`
+
+## v0.1.12
 
 `phd` now uses `-b` and `--bind` to set the host and port to
 bind to. `-p` and `-h` are now strictly for URL generation.
