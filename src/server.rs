@@ -10,6 +10,7 @@ use std::{
     path::Path,
     process::Command,
     str,
+    sync::atomic::{AtomicBool, Ordering as AtomicOrdering},
 };
 use threadpool::ThreadPool;
 
@@ -22,8 +23,6 @@ const MAX_PEEK_SIZE: usize = 1024;
 
 /// Files not displayed in directory listings.
 const IGNORED_FILES: [&str; 3] = ["header.gph", "footer.gph", ".reverse"];
-
-use std::sync::atomic::{AtomicBool, Ordering as AtomicOrdering};
 
 /// Whether to print info!() messages to stdout.
 /// Defaults to true.
