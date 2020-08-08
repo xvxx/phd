@@ -142,6 +142,7 @@ of Gopher!
         -h, --host HOST        Hostname for links. [Default: {host}]
         -p, --port PORT        Port for links. [Default: {port}]
         -b, --bind ADDRESS     Socket address to bind to. [Default: {bind}]
+        --no-color             Don't show colors in log messages.
 
     Other flags:
 

@@ -5,7 +5,24 @@
 //! println!("{}Error: {}{}", color::Red, "Something broke.", color::Reset);
 //! ```
 
-use std::fmt;
+use std::{
+    fmt,
+    sync::atomic::{AtomicBool, Ordering as AtomicOrdering},
+};
+
+/// Whether to show colors or not.
+/// Defaults to true.
+static SHOW_COLORS: AtomicBool = AtomicBool::new(true);
+
+/// Hide colors.
+pub fn hide_colors() {
+    SHOW_COLORS.swap(false, AtomicOrdering::Relaxed);
+}
+
+/// Are we showing colors are not?
+pub fn showing_colors() -> bool {
+    SHOW_COLORS.load(AtomicOrdering::Relaxed)
+}
 
 macro_rules! color {
     ($t:ident, $code:expr) => {
@@ -13,7 +30,11 @@ macro_rules! color {
         pub struct $t;
         impl fmt::Display for $t {
             fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                write!(f, "\x1b[{}m", $code)
+                if showing_colors() {
+                    write!(f, "\x1b[{}m", $code)
+                } else {
+                    write!(f, "")
+                }
             }
         }
     };

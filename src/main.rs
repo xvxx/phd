@@ -18,6 +18,7 @@ fn main() {
         match arg.as_ref() {
             "--version" | "-v" | "-version" => return print_version(),
             "--help" | "-help" => return print_help(),
+            "--no-color" | "-no-color" => phd::color::hide_colors(),
             "--render" | "-render" | "-r" => {
                 if let Some(path) = args.next() {
                     render = path;
@@ -94,6 +95,7 @@ Options:
     -h, --host HOST        Hostname for links. [Default: {host}]
     -p, --port PORT        Port for links. [Default: {port}]
     -b, --bind ADDRESS     Socket address to bind to. [Default: {bind}]
+    --no-color             Don't show colors in log messages.
 
 Other flags:
 
