@@ -1,5 +1,4 @@
 use phd;
-use std::net::SocketAddr;
 use std::process;
 
 const DEFAULT_BIND: &str = "[::]:7070";
@@ -10,7 +9,7 @@ fn main() {
     let args = std::env::args().skip(1).collect::<Vec<_>>();
     let mut args = args.iter();
     let mut root = ".";
-    let mut bind: SocketAddr = DEFAULT_BIND.parse().unwrap();
+    let mut addr = DEFAULT_BIND;
     let mut host = DEFAULT_HOST;
     let mut port = DEFAULT_PORT;
     let mut render = "";
@@ -27,14 +26,8 @@ fn main() {
                 }
             }
             "--bind" | "-b" | "-bind" => {
-                if let Some(b) = args.next() {
-                    bind = b
-                        .parse()
-                        .map_err(|_| {
-                            eprintln!("bad socket bind: {}", b);
-                            process::exit(1)
-                        })
-                        .unwrap();
+                if let Some(a) = args.next() {
+                    addr = a
                 }
             }
             "--port" | "-p" | "-port" => {
@@ -70,6 +63,13 @@ fn main() {
             }
         }
     }
+
+    // If port was given and socket wasn't, bind to that port.
+    let bind = if port != DEFAULT_PORT && addr == DEFAULT_BIND {
+        format!("[::]:{}", port).parse().unwrap()
+    } else {
+        addr.parse().unwrap()
+    };
 
     if !render.is_empty() {
         return match phd::server::render(host, port, root, &render) {
