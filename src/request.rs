@@ -51,7 +51,11 @@ impl Request {
     pub fn parse_request(&mut self, line: &str) {
         self.query.clear();
         self.selector.clear();
-        if let Some(i) = line.find('\t') {
+        if let Some((i, _)) = line
+            .chars()
+            .enumerate()
+            .find(|&(_, c)| c == '\t' || c == '?')
+        {
             if line.len() > i {
                 self.query.push_str(&line[i + 1..]);
                 self.selector.push_str(&line[..i]);
