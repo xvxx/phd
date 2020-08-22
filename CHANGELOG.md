@@ -5,6 +5,7 @@
   logging.
 - Slight change to binding behavior: if `-p` is passed without `-b`,
    we'll try to bind to that port. To this easier: `phd -p 7777`
+- Accept `?` as query string indicator, not just `TAB`. See #3.
 
 ## v0.1.12
 
