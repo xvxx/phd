@@ -13,6 +13,7 @@ fn main() {
     let mut host = DEFAULT_HOST;
     let mut port = DEFAULT_PORT;
     let mut render = "";
+
     while let Some(arg) = args.next() {
         match arg.as_ref() {
             "--version" | "-v" | "-version" => return print_version(),
@@ -62,6 +63,11 @@ fn main() {
                 }
             }
         }
+    }
+
+    // https://no-color.org/
+    if std::env::var("NO_COLOR").is_ok() {
+        phd::color::hide_colors()
     }
 
     // If port was given and socket wasn't, bind to that port.

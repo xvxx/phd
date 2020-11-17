@@ -1,10 +1,15 @@
-## v0.1.13-dev
+## v0.1.14-dev
 
+- If the `NO_COLOR` env variable is set, colors won't be printed to
+  the log. Same as starting with `--no-color`.
+  See https://no-color.org/.
+
+## v0.1.13
 
 - Added `--no-color` command line option to not display color when
   logging.
 - Slight change to binding behavior: if `-p` is passed without `-b`,
-   we'll try to bind to that port. To this easier: `phd -p 7777`
+  we'll try to bind to that port. To this easier: `phd -p 7777`
 - Accept `?` as query string indicator, not just `TAB`. See #3.
 
 ## v0.1.12
@@ -28,7 +33,6 @@ For now you can view it by cloning the repository and running:
     man ./doc/phd.1
 
 Enjoy!
-
 
 ## v0.1.10
 
