@@ -1,4 +1,4 @@
-## v0.1.14-dev
+## v0.1.14
 
 - If the `NO_COLOR` env variable is set, colors won't be printed to
   the log. Same as starting with `--no-color`.
