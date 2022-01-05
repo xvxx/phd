@@ -193,6 +193,10 @@ If you have **[cargo][rustup]**, you can install the crate directly:
 - [ ] TLS support
 - [ ] user input sanitization tests
 
+## ~ status ~
+
+phd is no longer under active development, but the latest version works great.
+
 [0]: https://github.com/xvxx/phd/releases/download/v0.1.14/phd-v0.1.14-linux-x86_64.tar.gz
 [1]: https://github.com/xvxx/phd/releases/download/v0.1.14/phd-v0.1.14-linux-armv7.tar.gz
 [2]: https://github.com/xvxx/phd/releases/download/v0.1.14/phd-v0.1.14-macos.zip
