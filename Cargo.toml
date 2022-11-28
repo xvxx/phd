@@ -29,5 +29,5 @@ dev-version-ext = "dev"
 [dependencies]
 content_inspector = "0.2.4"
 threadpool = "1.7.1"
-alphanumeric-sort = "1.0.11"
+alphanumeric-sort = "1.4"
 shell-escape = "0.1.4"

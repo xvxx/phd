@@ -410,7 +410,10 @@ fn sort_paths(dir_path: &str, reverse: bool) -> Result<Vec<DirEntry>> {
         let a_is_dir = is_dir(a);
         let b_is_dir = is_dir(b);
         if a_is_dir && b_is_dir || !a_is_dir && !b_is_dir {
-            let ord = alphanumeric_sort::compare_os_str(a.path().as_ref(), b.path().as_ref());
+            let ord = alphanumeric_sort::compare_os_str::<&Path, &Path>(
+                a.path().as_ref(),
+                b.path().as_ref(),
+            );
             if reverse {
                 ord.reverse()
             } else {
