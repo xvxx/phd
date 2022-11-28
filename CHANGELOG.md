@@ -1,3 +1,8 @@
+## v0.1.15-dev
+
+- Update `alphanumeric-sort` dependency so `cargo install phd` works again.
+- Recommend `cargo install phd --locked` in the README
+
 ## v0.1.14
 
 - If the `NO_COLOR` env variable is set, colors won't be printed to
