@@ -174,7 +174,7 @@ Just unzip/untar the `phd` program into your `$PATH` and get going!
 
 If you have **[cargo][rustup]**, you can install the crate directly:
 
-    cargo install phd
+    cargo install phd --locked
 
 ## ~ development ~
 
