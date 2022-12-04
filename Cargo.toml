@@ -24,7 +24,6 @@ pre-release-replacements = [
   {file="README.md", search="/v\\d+\\.\\d+\\.\\d+/", replace="/v{{version}}/"},
   {file="CHANGELOG.md", search="\\d+\\.\\d+\\.\\d+-dev", replace="{{version}}"},
 ]
-dev-version-ext = "dev"
 
 [dependencies]
 content_inspector = "0.2.4"
