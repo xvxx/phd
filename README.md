@@ -166,9 +166,9 @@ On macOS you can install with [Homebrew](https://brew.sh/):
 Binaries for Linux, Mac, and Raspberry Pi are available at
 gopher://phkt.io/1/releases/phd and https://github.com/xvxx/phd/releases:
 
-- [phd-v0.1.14-linux-x86_64.tar.gz][0]
-- [phd-v0.1.14-linux-armv7.tar.gz (Raspberry Pi)][1]
-- [phd-v0.1.14-macos.zip][2]
+- [phd-v0.1.15-linux-x86_64.tar.gz][0]
+- [phd-v0.1.15-linux-armv7.tar.gz (Raspberry Pi)][1]
+- [phd-v0.1.15-macos.zip][2]
 
 Just unzip/untar the `phd` program into your `$PATH` and get going!
 
@@ -197,9 +197,9 @@ If you have **[cargo][rustup]**, you can install the crate directly:
 
 phd is no longer under active development, but the latest version works great.
 
-[0]: https://github.com/xvxx/phd/releases/download/v0.1.14/phd-v0.1.14-linux-x86_64.tar.gz
-[1]: https://github.com/xvxx/phd/releases/download/v0.1.14/phd-v0.1.14-linux-armv7.tar.gz
-[2]: https://github.com/xvxx/phd/releases/download/v0.1.14/phd-v0.1.14-macos.zip
+[0]: https://github.com/xvxx/phd/releases/download/v0.1.15/phd-v0.1.15-linux-x86_64.tar.gz
+[1]: https://github.com/xvxx/phd/releases/download/v0.1.15/phd-v0.1.15-linux-armv7.tar.gz
+[2]: https://github.com/xvxx/phd/releases/download/v0.1.15/phd-v0.1.15-macos.zip
 [map]: https://en.wikipedia.org/wiki/Gopher_(protocol)#Source_code_of_a_menu
 [gmi]: http://r-36.net/scm/geomyidae/
 [rustup]: https://rustup.rs

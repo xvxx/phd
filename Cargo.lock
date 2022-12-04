@@ -50,7 +50,7 @@ dependencies = [
 
 [[package]]
 name = "phd"
-version = "0.1.15-dev"
+version = "0.1.15"
 dependencies = [
  "alphanumeric-sort",
  "content_inspector",

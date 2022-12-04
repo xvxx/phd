@@ -1,4 +1,4 @@
-## v0.1.15-dev
+## v0.1.15
 
 - Update `alphanumeric-sort` dependency so `cargo install phd` works again.
 - Recommend `cargo install phd --locked` in the README
